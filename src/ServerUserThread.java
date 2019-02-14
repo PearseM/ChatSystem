@@ -40,7 +40,7 @@ public class ServerUserThread extends Thread {
                             addMessage(Message.parse(message));
                         }
                         catch (ParseException e) {
-                            server.getIO().error("Error occurred when trying to parse incoming message.");
+                            server.getIO().error("Error occurred when trying to parse incoming message:\n" + message);
                         }
                     }
                 }
