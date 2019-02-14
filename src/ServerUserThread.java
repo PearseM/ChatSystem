@@ -15,6 +15,18 @@ public class ServerUserThread extends Thread {
         this.server = server;
     }
 
+    /**
+     * Sends the message to all clients and to the server's output.
+     * @param message The message to be sent.
+     */
+    protected void addMessage(Message message) {
+        server.getIO().write(message);
+        for (ServerUserThread client:
+                server.getClients()) {
+            client.send(message);
+        }
+    }
+
     @Override
     public void run() {
         try {
@@ -25,12 +37,18 @@ public class ServerUserThread extends Thread {
                 if (message!=null) {
                     if (!message.equals("")) {
                         try {
-                            server.addMessage(Message.parse(message));
+                            addMessage(Message.parse(message));
                         }
                         catch (ParseException e) {
                             server.getIO().error("Error occurred when trying to parse incoming message.");
                         }
                     }
+                }
+                try {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException e) {
+                    server.getIO().error("InterruptedException occurred when trying to sleep for user " + name);
                 }
             }
         }
@@ -42,7 +60,7 @@ public class ServerUserThread extends Thread {
     protected void send(Message message) {
         try {
             PrintWriter outWriter = new PrintWriter(socket.getOutputStream(), true);
-            outWriter.println(message);
+            outWriter.println(message.toTransportString());
         }
         catch (IOException e) {
             server.getIO().error("IOException occurred when trying to write to output stream.");

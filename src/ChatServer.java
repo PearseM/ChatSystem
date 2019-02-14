@@ -18,6 +18,10 @@ public class ChatServer {
         }
     }
 
+    public ArrayList<ServerUserThread> getClients() {
+        return clients;
+    }
+
     protected ServerIO getIO() {
         return inputOutput;
     }
@@ -40,18 +44,12 @@ public class ChatServer {
             catch (IOException e) {
                 inputOutput.error("IOException occurred when trying to accept connection.");
             }
-        }
-    }
-
-    /**
-     * Sends the message to all clients and to the server's output.
-     * @param message The message to be sent.
-     */
-    protected void addMessage(Message message) {
-        inputOutput.write(message);
-        for (ServerUserThread client:
-             clients) {
-            client.send(message);
+            try {
+                Thread.sleep(500);
+            }
+            catch (InterruptedException e) {
+                inputOutput.error("InterruptedException occurred while accepting connections.");
+            }
         }
     }
 
