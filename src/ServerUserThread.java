@@ -8,7 +8,6 @@ import java.text.ParseException;
 public class ServerUserThread extends Thread {
     private Socket socket;
     private ChatServer server;
-    private String name;
 
     public ServerUserThread(Socket socket, ChatServer server) {
         this.socket = socket;
@@ -31,7 +30,6 @@ public class ServerUserThread extends Thread {
     public void run() {
         try {
             BufferedReader inReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            name = inReader.readLine();
             while(true) {
                 String message = inReader.readLine();
                 if (message!=null) {
@@ -48,7 +46,7 @@ public class ServerUserThread extends Thread {
                     Thread.sleep(500);
                 }
                 catch (InterruptedException e) {
-                    server.getIO().error("InterruptedException occurred when trying to sleep for user " + name);
+                    server.getIO().error("InterruptedException occurred when trying to sleep.");
                 }
             }
         }

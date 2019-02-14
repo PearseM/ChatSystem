@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -26,8 +25,6 @@ public class ChatClient {
     private void connectToSocket(String hostname, int port) {
         try {
             socket = new Socket(hostname, port);
-            PrintWriter socketWriter = new PrintWriter(socket.getOutputStream());
-            socketWriter.println(name);
         }
         catch (UnknownHostException e) {
             if (hostname.equals("localhost")){
