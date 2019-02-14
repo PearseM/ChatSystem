@@ -6,7 +6,7 @@ public class Message {
     private final String content;
     private final Date date;
     private final String name;
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat();
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm:ss");
 
     //TODO: Add the user's identity as a field
 
