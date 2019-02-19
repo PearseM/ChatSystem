@@ -22,7 +22,9 @@ public class ServerUserThread extends Thread {
         server.getIO().write(message);
         for (ServerUserThread client:
                 server.getClients()) {
-            client.send(message);
+            if (client!=this) {
+                client.send(message);
+            }
         }
     }
 

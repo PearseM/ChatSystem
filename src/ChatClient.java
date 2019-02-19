@@ -63,6 +63,7 @@ public class ChatClient {
     }
 
     public static void main(String[] args) {
+        ChatClientGUI gui = null;
         boolean useGUI = false;
         int port = 14001;
         String hostname = "localhost";
@@ -94,6 +95,7 @@ public class ChatClient {
                         break;
                     case "-gui":
                         useGUI = true;
+                        gui = new ChatClientGUI();
                         break;
                     default:
                         System.out.println("Flag \"" + args[i] + "\"not recognised.");
@@ -104,6 +106,7 @@ public class ChatClient {
         ClientIO inputOutput = new ClientIO(useGUI);
         if (useGUI) {
             port = inputOutput.promptForPort();
+            inputOutput.setGui(gui);
         }
         String name = inputOutput.prompt("Please enter a nickname:");
         ChatClient client = new ChatClient(port, hostname, inputOutput, name);

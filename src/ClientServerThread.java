@@ -34,7 +34,7 @@ public class ClientServerThread extends Thread {
                 if (input!=null) {
                     if (!input.equals("")) {
                         try {
-                            client.getIO().write(Message.parse(input));
+                            client.getIO().write(Message.parse(input), false);
                         }
                         catch (ParseException e) {
                             client.getIO().error("Could not parse incoming message properly:\n" + input);

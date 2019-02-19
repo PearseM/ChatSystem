@@ -38,6 +38,14 @@ public class Message {
         return date;
     }
 
+    protected String getDateString() {
+        return dateFormat.format(date);
+    }
+
+    protected String getName() {
+        return name;
+    }
+
     protected static Message parse(String input) throws ParseException {
         int endOfSection = input.indexOf('}');
         String inputContent = input.substring((input.indexOf('{') + 1), input.indexOf('}'));

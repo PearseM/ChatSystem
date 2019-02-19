@@ -25,7 +25,8 @@ public abstract class InputOutput {
     protected String prompt(String desiredOutput) {
         if (useGUI) {
             //TODO: Configure prompts for GUI.
-            return "";
+            System.out.println(desiredOutput);
+            return readConsole();
         }
         else {
             System.out.println(desiredOutput);
@@ -71,7 +72,7 @@ public abstract class InputOutput {
 
     protected void write(Message message) {
         if (useGUI) {
-            // Send the message to the GUI
+
         }
         else {
             System.out.println(message);
