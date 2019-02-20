@@ -18,6 +18,7 @@ public class ClientServerThread extends Thread {
         try {
             PrintWriter socketWriter = new PrintWriter(socket.getOutputStream(), true);
             socketWriter.println(message.toTransportString());
+            client.getIO().write(message, true);
         }
         catch (IOException e) {
             client.getIO().error("IOException occurred when trying to send message.");

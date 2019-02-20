@@ -6,15 +6,18 @@ public class ChatClientGUI {
     private JPanel chatPane;
     private JPanel messagesContainer;
     private JPanel bottomBar;
+    private JScrollPane scrollPane;
+    private ChatClient client;
 
     public ChatClientGUI() {
         JFrame frame = new JFrame("Chatting System");
         messageInput = new JTextField();
+        messageInput.addActionListener(new SendMessageAction(this));
         chatPane = new JPanel();
         messagesContainer = new JPanel();
         messagesContainer.setLayout(new BoxLayout(messagesContainer, BoxLayout.Y_AXIS));
         bottomBar = new JPanel();
-        JScrollPane scrollPane = new JScrollPane(messagesContainer,
+        scrollPane = new JScrollPane(messagesContainer,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16); //Speeds up scrolling
@@ -26,7 +29,7 @@ public class ChatClientGUI {
         bottomBar.add(Box.createRigidArea(new Dimension(100, -1)));
         bottomBar.add(messageInput);
         bottomBar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        bottomBar.setBackground(Color.gray);
+        bottomBar.setBackground(Color.LIGHT_GRAY);
         bottomBar.setPreferredSize(new Dimension(-1, 60));
         chatPane.setLayout(new BorderLayout());
         chatPane.setPreferredSize(new Dimension(800, 600));
@@ -55,7 +58,24 @@ public class ChatClientGUI {
         return chatPane;
     }
 
-    /*
+    public ChatClient getClient() {
+        return client;
+    }
+
+    public JTextField getMessageInput() {
+        return messageInput;
+    }
+
+    public void scrollPaneToBottom() {
+        JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+        scrollBar.setValue(scrollBar.getMaximum());
+    }
+
+    public void setClient(ChatClient client) {
+        this.client = client;
+    }
+
+/*
     @Override
     public void run() {
         JFrame frame = new JFrame("ChatClientView");

@@ -57,6 +57,7 @@ public class ChatClient {
 
     protected void initialize() {
         serverThread = new ClientServerThread(socket, this);
+        SendMessageAction.serverThread = serverThread; //Pass this server thread to the GUI SendMessageAction
         inputThread = new ClientInputThread(this);
         serverThread.start();
         inputThread.start();
@@ -110,6 +111,9 @@ public class ChatClient {
         }
         String name = inputOutput.prompt("Please enter a nickname:");
         ChatClient client = new ChatClient(port, hostname, inputOutput, name);
+        if (useGUI) {
+            gui.setClient(client);
+        }
         client.initialize();
     }
 }

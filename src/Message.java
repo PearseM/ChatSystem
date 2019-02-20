@@ -8,8 +8,6 @@ public class Message {
     private final String name;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm:ss");
 
-    //TODO: Add the user's identity as a field
-
     /**
      * Creates a message with the specified content and name and initializes the date to be the current time.
      * @param content The desired content of the message.

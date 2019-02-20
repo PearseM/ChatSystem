@@ -9,7 +9,6 @@ public class ClientInputThread extends Thread {
         while (true) {
             Message inputMessage = client.getIO().getMessage(client.getName());
             client.getServerThread().sendMessage(inputMessage);
-            client.getIO().write(inputMessage);
             try {
                 Thread.sleep(500);
             }

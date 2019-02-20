@@ -58,6 +58,7 @@ public class ClientIO extends InputOutput {
             }
             gui.generateMessage(message, side);
             gui.getChatPane().revalidate();
+            gui.scrollPaneToBottom();
         }
         else {
             System.out.println(message);
