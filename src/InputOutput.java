@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 
 public abstract class InputOutput {
     private boolean useGUI;
+    private GUI gui;
 
     /**
      * Initialises the output to be either command line or GUI.
@@ -17,9 +18,13 @@ public abstract class InputOutput {
      * Prints a string out to the relevant output as an error.
      * @param errorDescription A description of the error that has occurred.
      */
-    //TODO: Add a separate type of output for errors.
     protected void error(String errorDescription) {
-        write(errorDescription);
+        if (isUsingGUI()) {
+            gui.writeError(errorDescription);
+        }
+        else {
+            write("ERROR:" + errorDescription);
+        }
     }
 
     /**
@@ -38,9 +43,7 @@ public abstract class InputOutput {
      */
     protected String prompt(String desiredOutput) throws ExitException{
         if (useGUI) {
-            //TODO: Configure prompts for GUI.
-            System.out.println(desiredOutput);
-            return readConsole();
+            return gui.promptUserForInput(desiredOutput);
         }
         else {
             System.out.println(desiredOutput);
@@ -91,14 +94,20 @@ public abstract class InputOutput {
         }
     }
 
-    //TODO: Configure output for GUI
+    /**
+     * @param gui The GUI instance being used.
+     */
+    public void setGUI(GUI gui) {
+        this.gui = gui;
+    }
+
     /**
      * Writes to the relevant output.
      * @param desiredOutput A string containing the desired output.
      */
     protected void write(String desiredOutput) {
-        if (useGUI) {
-            // Send the desiredOutput to the graphical user interface
+        if (isUsingGUI()) {
+            gui.writeInfo(desiredOutput);
         }
         else {
             System.out.println(desiredOutput);
@@ -111,7 +120,7 @@ public abstract class InputOutput {
      */
     protected void write(Message message) {
         if (useGUI) {
-
+            //TODO add default message output for GUI (primarily for the server as this method is overridden for the client)
         }
         else {
             System.out.println(message);

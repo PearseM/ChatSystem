@@ -44,7 +44,8 @@ public class MessagePanel extends JPanel {
         super.paintComponent(g);
         Graphics roundedRectangle = g;
         roundedRectangle.setColor(Color.red);
-        roundedRectangle.fillRoundRect(0, 0, 200, 200, 20, 20);
+        Dimension preferredSize = getPreferredSize();
+        roundedRectangle.fillRoundRect(0, 0, (int) preferredSize.getWidth(), (int) preferredSize.getHeight(), 20, 20);
     }
 }
 

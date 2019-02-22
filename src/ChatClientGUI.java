@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class ChatClientGUI {
+public class ChatClientGUI implements GUI {
     private JTextField messageInput;
     private JPanel chatPane;
     private JPanel messagesContainer;
@@ -50,17 +50,17 @@ public class ChatClientGUI {
      * @param message The message to be output.
      * @param side The side to draw the message on:
      *             <ul>
-     *              <li>0 = Left</li>
      *              <li>1 = Left</li>
+     *              <li>0 = Right</li>
      *             </ul>
      */
     public void generateMessage(Message message, int side) {
         MessagePanel mp = new MessagePanel();
         mp.initialiseMessage(message);
-        if (side==0) {
+        if (side==1) {
             mp.setAlignmentX(Component.LEFT_ALIGNMENT);
         }
-        else if (side==1) {
+        else if (side==0) {
             mp.setAlignmentX(Component.RIGHT_ALIGNMENT);
         }
         messagesContainer.add(mp);
@@ -90,6 +90,15 @@ public class ChatClientGUI {
     }
 
     /**
+     * Creates a dialog which waits for a user to input text.
+     * @param message Instructions telling the user what they should input.
+     * @return The user's input.
+     */
+    public String promptUserForInput(String message) {
+        return JOptionPane.showInputDialog(message);
+    }
+
+    /**
      * Scrolls the messages pane to the bottom.
      */
     public void scrollPaneToBottom() {
@@ -102,6 +111,28 @@ public class ChatClientGUI {
      */
     public void setClient(ChatClient client) {
         this.client = client;
+    }
+
+    /**
+     * Creates a dialog which displays the error message.
+     * @param errorMessage The error message to display.
+     */
+    public void writeError(String errorMessage) {
+        JOptionPane optionPane = new JOptionPane(errorMessage, JOptionPane.ERROR_MESSAGE);
+        JDialog dialog = optionPane.createDialog("Error");
+        dialog.setAlwaysOnTop(true);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * Creates a dialog which displays the information.
+     * @param information The error message to display.
+     */
+    public void writeInfo(String information) {
+        JOptionPane optionPane = new JOptionPane(information, JOptionPane.INFORMATION_MESSAGE);
+        JDialog dialog = optionPane.createDialog("Information");
+        dialog.setAlwaysOnTop(true);
+        dialog.setVisible(true);
     }
 }
 

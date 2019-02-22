@@ -131,15 +131,15 @@ public class ChatClient {
         }
         ClientIO inputOutput = new ClientIO(useGUI);
         if (useGUI) {
-            port = inputOutput.promptForPort();
             inputOutput.setGUI(gui);
+            port = inputOutput.promptForPort();
         }
         String name = "";
         try {
             name = inputOutput.prompt("Please enter a nickname:");
         }
         catch (ExitException e) {
-            inputOutput.write(e.getMessage());
+            System.out.println(e.getMessage());
             System.exit(0);
         }
         ChatClient client = new ChatClient(port, hostname, inputOutput, name);

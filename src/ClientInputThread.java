@@ -20,7 +20,7 @@ public class ClientInputThread extends Thread {
                 client.getServerThread().sendMessage(inputMessage);
             }
             catch (ExitException e) {
-                client.getIO().write(e.getMessage());
+                System.out.println(e.getMessage());
                 System.exit(0);
             }
             try {

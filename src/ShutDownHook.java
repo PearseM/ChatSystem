@@ -18,7 +18,7 @@ public class ShutDownHook extends Thread {
     public void run() {
         try {
             socket.close();
-            inputOutput.write("Socket closed.");
+            System.out.println("Socket closed.");
         }
         catch (IOException e) {
             inputOutput.error("IOException occurred when trying to close the ServerSocket during shutdown.");

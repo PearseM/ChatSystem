@@ -19,24 +19,6 @@ public class ClientServerThread extends Thread {
         this.client = client;
     }
 
-
-    /**
-     * Closes the socket and exits the program.
-     * @param reason The reason why the program is exiting.
-     */
-    /*
-    protected void close(String reason) {
-        try {
-            socket.close();
-        }
-        catch (IOException e) {
-            client.getIO().error("IOException occurred when trying to close the program.");
-        }
-        client.getIO().write(reason);
-        System.exit(0);
-    }
-    */
-
     /**
      * Sends a message to the server and prints the message to the client output.
      * @param message The message to be sent.
@@ -78,7 +60,7 @@ public class ClientServerThread extends Thread {
                     }
                 }
                 else {
-                    client.getIO().write("Exiting because connection to server has been lost.");
+                    client.getIO().error("Exiting because connection to server has been lost.");
                     System.exit(0);
                 }
             } catch (IOException e) {
@@ -91,7 +73,7 @@ public class ClientServerThread extends Thread {
                 client.getIO().error("InterruptedException occurred when trying to read from server.");
             }
         }
-        client.getIO().write("Exiting because connection to server has been lost.");
+        client.getIO().error("Exiting because connection to server has been lost.");
         System.exit(0);
     }
 }

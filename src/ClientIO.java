@@ -1,5 +1,4 @@
 public class ClientIO extends InputOutput {
-
     private ChatClientGUI gui;
 
     /**
@@ -15,18 +14,11 @@ public class ClientIO extends InputOutput {
      * @return The message which the user has entered.
      */
     protected Message getMessage(String name) throws ExitException {
-        if (isUsingGUI()) {
-            return new Message(readConsole(), name);//TODO: Get message from GUI
-        }
-        else {
-            return new Message(readConsole(), name);
-        }
+        return new Message(readConsole(), name);
     }
 
-    /**
-     * @param gui The GUI instance being used.
-     */
     public void setGUI(ChatClientGUI gui) {
+        super.setGUI(gui);
         this.gui = gui;
     }
 
