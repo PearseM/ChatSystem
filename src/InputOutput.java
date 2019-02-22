@@ -13,16 +13,30 @@ public abstract class InputOutput {
         this.useGUI = useGUI;
     }
 
+    /**
+     * Prints a string out to the relevant output as an error.
+     * @param errorDescription A description of the error that has occurred.
+     */
     //TODO: Add a separate type of output for errors.
     protected void error(String errorDescription) {
         write(errorDescription);
     }
 
+    /**
+     * @return Whether the program is in GUI mode.
+     */
     protected boolean isUsingGUI() {
         return useGUI;
     }
 
-    protected String prompt(String desiredOutput) {
+    /**
+     * Prompts the user for input.
+     * @param desiredOutput The message you would like to output to the user. This should describe what type of input
+     *                      you expect.
+     * @return The user's input.
+     * @throws ExitException If the user has typed <samp>EXIT</samp>.
+     */
+    protected String prompt(String desiredOutput) throws ExitException{
         if (useGUI) {
             //TODO: Configure prompts for GUI.
             System.out.println(desiredOutput);
@@ -34,19 +48,40 @@ public abstract class InputOutput {
         }
     }
 
+    /**
+     * Specialised variant of prompt to get the port and validate it.
+     * @return The user's chosen port or 14001 if their chosen port is invalid.
+     */
     protected int promptForPort() {
-        //Prompt the user to enter a port number.
+        String portInput;
+        try {
+            portInput = prompt("Please enter a port number:");
+            int port = Integer.parseInt(portInput);
+            return (port>=0 && port<=65535) ? port:14001;
+        }
+        catch (ExitException e) {
+            System.out.println(e.getMessage());
+            System.exit(0);
+        }
         return 14001;
     }
 
-    protected String readConsole() {
+    /**
+     * Read input from the command line.
+     * @return The user's input.
+     * @throws ExitException If the user has typed <samp>EXIT</samp>.
+     */
+    protected String readConsole() throws ExitException {
         String input;
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             try {
                 input = consoleReader.readLine();
                 if (input!=null) {
-                    if (!input.equals("")) {
+                    if (input.equals("EXIT")) {
+                        throw new ExitException("Exiting upon user request.");
+                    }
+                    else if (!input.equals("")) {
                         return input;
                     }
                 }
@@ -70,6 +105,10 @@ public abstract class InputOutput {
         }
     }
 
+    /**
+     * Writes to the relevant output.
+     * @param message The message to be output.
+     */
     protected void write(Message message) {
         if (useGUI) {
 

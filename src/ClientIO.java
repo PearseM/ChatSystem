@@ -14,7 +14,7 @@ public class ClientIO extends InputOutput {
      * Waits for the user to enter a message.
      * @return The message which the user has entered.
      */
-    protected Message getMessage(String name) {
+    protected Message getMessage(String name) throws ExitException {
         if (isUsingGUI()) {
             return new Message(readConsole(), name);//TODO: Get message from GUI
         }
@@ -23,13 +23,16 @@ public class ClientIO extends InputOutput {
         }
     }
 
-    public void setGui(ChatClientGUI gui) {
+    /**
+     * @param gui The GUI instance being used.
+     */
+    public void setGUI(ChatClientGUI gui) {
         this.gui = gui;
     }
 
     /**
      * Writes message to the relevant output. If the output is the GUI, messages are drawn on the right side by default.
-     * @param message
+     * @param message The message to display.
      */
     protected void write(Message message) {
         if (isUsingGUI()) {
@@ -43,7 +46,7 @@ public class ClientIO extends InputOutput {
 
     /**
      * Writes message to the relevant output.
-     * @param message
+     * @param message The message to display.
      * @param rightSide Only to be used when the output is the GUI. True specifies that messages are drawn on the right
      *                  side of the screen and false specifies the left.
      */

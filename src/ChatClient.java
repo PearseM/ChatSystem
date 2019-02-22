@@ -5,15 +5,31 @@ import java.net.UnknownHostException;
 public class ChatClient {
     private Socket socket;
     private ClientIO inputOutput;
-    private ClientInputThread inputThread;
     private ClientServerThread serverThread;
     private final String name;
 
+    /**
+     * Constructs a ChatClient object which provides the basis of the messaging client.
+     * @param port The desired port to connect to
+     * @param hostname The desired host to connect to
+     * @param inputOutput The instance of IO being used to handle inputs and outputs
+     * @param name The user's chosen name
+     */
     public ChatClient(int port, String hostname, ClientIO inputOutput, String name) {
         this.inputOutput = inputOutput;
         this.name = name;
-        connectToSocket(hostname, port);
+        if (!connectToSocket(hostname, port)) {
+            inputOutput.error("Could not connect to server. Please try running the program again.");
+            System.exit(1);
+        }
+        Runtime.getRuntime().addShutdownHook(new ShutDownHook(socket, inputOutput));
         inputOutput.write("Connected to server.");
+        serverThread = new ClientServerThread(socket, this);
+        //Pass this server thread to the GUI SendMessageAction so that messages can be sent to the server upon input
+        SendMessageAction.serverThread = serverThread;
+        ClientInputThread inputThread = new ClientInputThread(this);
+        serverThread.start();
+        inputThread.start();
     }
 
     /**
@@ -21,46 +37,54 @@ public class ChatClient {
      * hostname "localhost".
      * @param hostname The desired address to connect to.
      * @param port The desired port to connect to.
+     * @return True if a socket was created and false otherwise.
      */
-    private void connectToSocket(String hostname, int port) {
+    private boolean connectToSocket(String hostname, int port) {
         try {
             socket = new Socket(hostname, port);
         }
         catch (UnknownHostException e) {
             if (hostname.equals("localhost")){
-                inputOutput.error("Could not connect to server.");
-                //TODO: exit the program
+                inputOutput.error("Could not connect to server. Please try running the program again.");
+                System.exit(1);
             }
-            inputOutput.error("Could not connect to address " + hostname + ". Attempting to use localhost...");
-            connectToSocket("localhost", port);
+            else {
+                inputOutput.error("Could not connect to address " + hostname + ". Attempting to use localhost...");
+                connectToSocket("localhost", port);
+            }
         }
         catch (IOException e) {
-            inputOutput.error("IOException occurred when trying to connect.");
+            if (hostname.equals("localhost")) {
+                inputOutput.error("Could not connect to server. Please try running the program again.");
+                System.exit(1);
+            }
+            else {
+                inputOutput.error("IOException occurred when trying to connect. Attempting to use localhost...");
+                connectToSocket("localhost", port);
+            }
         }
+        return socket!=null;
     }
 
-    public ClientServerThread getServerThread() {
+    /**
+     * @return The thread which is maintaining the connection to the server.
+     */
+    protected ClientServerThread getServerThread() {
         return serverThread;
     }
 
-    public void setServerThread(ClientServerThread serverThread) {
-        this.serverThread = serverThread;
-    }
-
+    /**
+     * @return The instance of IO which is being used to handle inputs and outputs.
+     */
     protected ClientIO getIO() {
         return inputOutput;
     }
 
+    /**
+     * @return The user's chosen name.
+     */
     protected String getName() {
         return name;
-    }
-
-    protected void initialize() {
-        serverThread = new ClientServerThread(socket, this);
-        SendMessageAction.serverThread = serverThread; //Pass this server thread to the GUI SendMessageAction
-        inputThread = new ClientInputThread(this);
-        serverThread.start();
-        inputThread.start();
     }
 
     public static void main(String[] args) {
@@ -96,6 +120,7 @@ public class ChatClient {
                         break;
                     case "-gui":
                         useGUI = true;
+                        //Starts the GUI
                         gui = new ChatClientGUI();
                         break;
                     default:
@@ -107,13 +132,20 @@ public class ChatClient {
         ClientIO inputOutput = new ClientIO(useGUI);
         if (useGUI) {
             port = inputOutput.promptForPort();
-            inputOutput.setGui(gui);
+            inputOutput.setGUI(gui);
         }
-        String name = inputOutput.prompt("Please enter a nickname:");
+        String name = "";
+        try {
+            name = inputOutput.prompt("Please enter a nickname:");
+        }
+        catch (ExitException e) {
+            inputOutput.write(e.getMessage());
+            System.exit(0);
+        }
         ChatClient client = new ChatClient(port, hostname, inputOutput, name);
+        //Pass the newly created client object to the GUI, if the program is being used in GUI mode.
         if (useGUI) {
             gui.setClient(client);
         }
-        client.initialize();
     }
 }

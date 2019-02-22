@@ -9,6 +9,11 @@ public class ServerUserThread extends Thread {
     private Socket socket;
     private ChatServer server;
 
+    /**
+     * Constructs a new thread to maintain a socket with a user.
+     * @param socket The opened user socket.
+     * @param server The server instance that created this thread.
+     */
     public ServerUserThread(Socket socket, ChatServer server) {
         this.socket = socket;
         this.server = server;
@@ -28,11 +33,14 @@ public class ServerUserThread extends Thread {
         }
     }
 
+    /**
+     * Reads from the client stream. If a message is detected, addMessage is called.
+     */
     @Override
     public void run() {
         try {
             BufferedReader inReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            while(true) {
+            while(!socket.isClosed()) {
                 String message = inReader.readLine();
                 if (message!=null) {
                     if (!message.equals("")) {
@@ -43,6 +51,12 @@ public class ServerUserThread extends Thread {
                             server.getIO().error("Error occurred when trying to parse incoming message:\n" + message);
                         }
                     }
+                }
+                else {
+                    //If message is null, then the client has disconnected.
+                    socket.close();
+                    server.removeClient(this);
+                    return; //Stop this thread from running
                 }
                 try {
                     Thread.sleep(500);
@@ -57,13 +71,21 @@ public class ServerUserThread extends Thread {
         }
     }
 
+    /**
+     * Sends a message to the client.
+     * @param message The message to be sent.
+     */
     protected void send(Message message) {
-        try {
-            PrintWriter outWriter = new PrintWriter(socket.getOutputStream(), true);
-            outWriter.println(message.toTransportString());
+        if (socket.isClosed()) {
+            server.removeClient(this);
         }
-        catch (IOException e) {
-            server.getIO().error("IOException occurred when trying to write to output stream.");
+        else {
+            try {
+                PrintWriter outWriter = new PrintWriter(socket.getOutputStream(), true);
+                outWriter.println(message.toTransportString());
+            } catch (IOException e) {
+                server.getIO().error("IOException occurred when trying to write to output stream.");
+            }
         }
     }
 }

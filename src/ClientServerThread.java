@@ -9,25 +9,60 @@ public class ClientServerThread extends Thread {
     private Socket socket;
     private ChatClient client;
 
+    /**
+     * Constructs a thread which is used to maintain a socket connection with the server.
+     * @param socket The socket which has already been created between the client and the server.
+     * @param client Should be the ChatClient which created this thread.
+     */
     public ClientServerThread(Socket socket, ChatClient client) {
         this.socket = socket;
         this.client = client;
     }
 
-    protected void sendMessage(Message message) {
+
+    /**
+     * Closes the socket and exits the program.
+     * @param reason The reason why the program is exiting.
+     */
+    /*
+    protected void close(String reason) {
         try {
-            PrintWriter socketWriter = new PrintWriter(socket.getOutputStream(), true);
-            socketWriter.println(message.toTransportString());
-            client.getIO().write(message, true);
+            socket.close();
         }
         catch (IOException e) {
-            client.getIO().error("IOException occurred when trying to send message.");
+            client.getIO().error("IOException occurred when trying to close the program.");
+        }
+        client.getIO().write(reason);
+        System.exit(0);
+    }
+    */
+
+    /**
+     * Sends a message to the server and prints the message to the client output.
+     * @param message The message to be sent.
+     */
+    protected void sendMessage(Message message) {
+        if (socket.isClosed()) {
+            client.getIO().write("Exiting because connection to server has been lost.");
+            System.exit(0);
+        }
+        else {
+            try {
+                PrintWriter socketWriter = new PrintWriter(socket.getOutputStream(), true);
+                socketWriter.println(message.toTransportString());
+                client.getIO().write(message, true);
+            } catch (IOException e) {
+                client.getIO().error("IOException occurred when trying to send message.");
+            }
         }
     }
 
+    /**
+     * Waits for messages from the server then writes them to the client output.
+     */
     @Override
     public void run() {
-        while (true) {
+        while (!socket.isClosed()) {
             String input;
             try {
                 BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -42,6 +77,10 @@ public class ClientServerThread extends Thread {
                         }
                     }
                 }
+                else {
+                    client.getIO().write("Exiting because connection to server has been lost.");
+                    System.exit(0);
+                }
             } catch (IOException e) {
                 client.getIO().error("IOException occurred when trying to read from socket.");
             }
@@ -52,5 +91,7 @@ public class ClientServerThread extends Thread {
                 client.getIO().error("InterruptedException occurred when trying to read from server.");
             }
         }
+        client.getIO().write("Exiting because connection to server has been lost.");
+        System.exit(0);
     }
 }

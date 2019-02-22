@@ -9,6 +9,9 @@ public class ChatClientGUI {
     private JScrollPane scrollPane;
     private ChatClient client;
 
+    /**
+     * Creates a new GUI for the client.
+     */
     public ChatClientGUI() {
         JFrame frame = new JFrame("Chatting System");
         messageInput = new JTextField();
@@ -42,6 +45,15 @@ public class ChatClientGUI {
         frame.setVisible(true);
     }
 
+    /**
+     * Outputs a message to the screen.
+     * @param message The message to be output.
+     * @param side The side to draw the message on:
+     *             <ul>
+     *              <li>0 = Left</li>
+     *              <li>1 = Left</li>
+     *             </ul>
+     */
     public void generateMessage(Message message, int side) {
         MessagePanel mp = new MessagePanel();
         mp.initialiseMessage(message);
@@ -54,37 +66,42 @@ public class ChatClientGUI {
         messagesContainer.add(mp);
     }
 
+    //TODO Review whether the entire chatPane needs to be returned
+    /**
+     * @return The main chat pane container of the GUI.
+     */
     public JPanel getChatPane() {
         return chatPane;
     }
 
+    /**
+     * @return The main client object.
+     */
     public ChatClient getClient() {
         return client;
     }
 
+    //TODO review whether the entire TextField needs to returned
+    /**
+     * @return The text field which the user
+     */
     public JTextField getMessageInput() {
         return messageInput;
     }
 
+    /**
+     * Scrolls the messages pane to the bottom.
+     */
     public void scrollPaneToBottom() {
         JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
         scrollBar.setValue(scrollBar.getMaximum());
     }
 
+    /**
+     * @param client The main client object.
+     */
     public void setClient(ChatClient client) {
         this.client = client;
     }
-
-/*
-    @Override
-    public void run() {
-        JFrame frame = new JFrame("ChatClientView");
-        ChatClientGUIThread view = new ChatClientGUIThread();
-        frame.setContentPane(view.getChatPane());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
-    */
 }
 

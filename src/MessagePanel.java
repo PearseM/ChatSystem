@@ -3,12 +3,17 @@ import java.awt.*;
 
 public class MessagePanel extends JPanel {
 
+    /**
+     * Sets up the display properties of the new message panel.
+     * @param message The message to print on the screen.
+     */
     public void initialiseMessage(Message message) {
+        String cssProperties = "color: white; font-family: Arial;";
         String messageText =
                 "<html>" +
-                    "<h4 style=\"color: white; font-family: Arial;\">" + message.getName() + "</h4>" +
-                    "<p style=\"color: white; font-family: Arial;\">" + message.getContent() + "</p>" +
-                    "<h5 style=\"color: white; font-family: Arial;\"><em>" + message.getDateString() + "</em></h5>" +
+                    "<h4 style=\"" + cssProperties + "\">" + message.getName() + "</h4>" +
+                    "<p style=\"" + cssProperties + "\">" + message.getContent() + "</p>" +
+                    "<h5 style=\"" + cssProperties + "\"><em>" + message.getDateString() + "</em></h5>" +
                 "</html>";
         JEditorPane messageContent = new JEditorPane("text/html", messageText);
         messageContent.setOpaque(false);
