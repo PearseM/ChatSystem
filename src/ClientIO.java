@@ -29,7 +29,6 @@ public class ClientIO extends InputOutput {
     protected void write(Message message) {
         if (isUsingGUI()) {
             gui.generateMessage(message, 1);
-            gui.getChatPane().revalidate();
         }
         else {
             System.out.println(message);
@@ -52,8 +51,6 @@ public class ClientIO extends InputOutput {
                 side = 0;
             }
             gui.generateMessage(message, side);
-            gui.getChatPane().revalidate();
-            gui.scrollPaneToBottom();
         }
         else {
             System.out.println(message);

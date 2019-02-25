@@ -5,40 +5,53 @@ public class ChatClientGUI implements GUI {
     private JTextField messageInput;
     private JPanel chatPane;
     private JPanel messagesContainer;
-    private JPanel bottomBar;
     private JScrollPane scrollPane;
     private ChatClient client;
+    private int messageRow;
 
     /**
      * Creates a new GUI for the client.
      */
     public ChatClientGUI() {
+        //Creates the main window
         JFrame frame = new JFrame("Chatting System");
+        //Creates the text field for user message input
         messageInput = new JTextField();
         messageInput.addActionListener(new SendMessageAction(this));
-        chatPane = new JPanel();
-        messagesContainer = new JPanel();
-        messagesContainer.setLayout(new BoxLayout(messagesContainer, BoxLayout.Y_AXIS));
-        bottomBar = new JPanel();
-        scrollPane = new JScrollPane(messagesContainer,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); //Speeds up scrolling
         messageInput.setPreferredSize(new Dimension(500, 40));
         messageInput.setMaximumSize(messageInput.getPreferredSize());
         messageInput.setMinimumSize(new Dimension(100, 40));
         messageInput.setFont(new Font("basicFont", Font.PLAIN, 22));
+
+        //Creates the messages container in which all of the MessagePanel objects are placed
+        messagesContainer = new JPanel();
+        messagesContainer.setLayout(new GridBagLayout());
+        messageRow = 0;
+
+        //Creates the scroll pane which contains the messageContainer, such that the user can scroll to see messages
+        scrollPane = new JScrollPane(messagesContainer,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16); //Speeds up scrolling
+
+        //Creates the bottom bar which houses the message input
+        JPanel bottomBar = new JPanel();
         bottomBar.setLayout(new BoxLayout(bottomBar, BoxLayout.X_AXIS));
         bottomBar.add(Box.createRigidArea(new Dimension(100, -1)));
         bottomBar.add(messageInput);
         bottomBar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         bottomBar.setBackground(Color.LIGHT_GRAY);
         bottomBar.setPreferredSize(new Dimension(-1, 60));
+
+        //Creates the chat pane which is the main container of the chat window
+        chatPane = new JPanel();
         chatPane.setLayout(new BorderLayout());
         chatPane.setPreferredSize(new Dimension(800, 600));
         chatPane.setMinimumSize(new Dimension (400, 300));
         chatPane.add(scrollPane, BorderLayout.CENTER);
         chatPane.add(bottomBar, BorderLayout.PAGE_END);
+
+        //Adds everything to the main frame
         frame.setContentPane(chatPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -50,28 +63,26 @@ public class ChatClientGUI implements GUI {
      * @param message The message to be output.
      * @param side The side to draw the message on:
      *             <ul>
-     *              <li>1 = Left</li>
-     *              <li>0 = Right</li>
+     *              <li>0 = Left</li>
+     *              <li>1 = Right</li>
      *             </ul>
      */
     public void generateMessage(Message message, int side) {
         MessagePanel mp = new MessagePanel();
         mp.initialiseMessage(message);
-        if (side==1) {
-            mp.setAlignmentX(Component.LEFT_ALIGNMENT);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.PAGE_START;
+        constraints.insets = new Insets(10, 0, 10, 0);
+        if (side==0) {
+            constraints.gridx = 0;
         }
-        else if (side==0) {
-            mp.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        else if (side==1) {
+            constraints.gridx = 1;
         }
-        messagesContainer.add(mp);
-    }
-
-    //TODO Review whether the entire chatPane needs to be returned
-    /**
-     * @return The main chat pane container of the GUI.
-     */
-    public JPanel getChatPane() {
-        return chatPane;
+        constraints.gridy = messageRow++;
+        messagesContainer.add(mp, constraints);
+        chatPane.revalidate();
+        scrollPaneToBottom();
     }
 
     /**

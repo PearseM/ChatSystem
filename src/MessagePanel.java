@@ -17,9 +17,10 @@ public class MessagePanel extends JPanel {
                 "</html>";
         JEditorPane messageContent = new JEditorPane("text/html", messageText);
         messageContent.setOpaque(false);
-        messageContent.setMaximumSize(new Dimension(180, 200));
-        messageContent.setPreferredSize(new Dimension(180, 200));
+        messageContent.setPreferredSize(new Dimension(180, messageContent.getPreferredSize().height));
         messageContent.setAlignmentX(Component.LEFT_ALIGNMENT);
+        setPreferredSize(messageContent.getPreferredSize());
+        revalidate();
         add(messageContent);
 
     }
@@ -36,7 +37,7 @@ public class MessagePanel extends JPanel {
 
     @Override
     public Dimension getMaximumSize() {
-        return new Dimension(200, 200);
+        return getPreferredSize();
     }
 
     @Override

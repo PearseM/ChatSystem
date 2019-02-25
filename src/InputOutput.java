@@ -58,9 +58,15 @@ public abstract class InputOutput {
     protected int promptForPort() {
         String portInput;
         try {
-            portInput = prompt("Please enter a port number:");
+            portInput = prompt("Please enter a port number. The default is 14001.");
+            if (portInput == null) {
+                return 14001;
+            }
             int port = Integer.parseInt(portInput);
             return (port>=0 && port<=65535) ? port:14001;
+        }
+        catch (NumberFormatException e) {
+            promptForPort();
         }
         catch (ExitException e) {
             System.out.println(e.getMessage());

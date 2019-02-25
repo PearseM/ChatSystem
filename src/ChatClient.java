@@ -132,11 +132,25 @@ public class ChatClient {
         ClientIO inputOutput = new ClientIO(useGUI);
         if (useGUI) {
             inputOutput.setGUI(gui);
+            try {
+                String hostInput = inputOutput.prompt("Please enter the IP address of the server you would like to " +
+                        "connect to. The default is localhost.");
+                if (hostInput != null) {
+                    hostname = hostInput;
+                }
+            }
+            catch (ExitException e) {
+                System.out.println(e.getMessage());
+                System.exit(0);
+            }
             port = inputOutput.promptForPort();
         }
-        String name = "";
+        String name = "Anonymous";
         try {
-            name = inputOutput.prompt("Please enter a nickname:");
+            String inputName = inputOutput.prompt("Please enter a nickname:");
+            if (inputName != null) {
+                name = inputName;
+            }
         }
         catch (ExitException e) {
             System.out.println(e.getMessage());

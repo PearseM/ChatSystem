@@ -69,6 +69,7 @@ public class Message {
         String inputName = input.substring((input.indexOf('{')+1), endOfSection);
         Date inputDate = dateFormat.parse(inputDateString);
         return new Message(inputContent, inputName, inputDate);
+        //TODO make sure messages with {} are handled correctly
     }
 
     /**
