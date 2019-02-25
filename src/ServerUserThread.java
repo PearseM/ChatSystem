@@ -41,7 +41,13 @@ public class ServerUserThread extends Thread {
         try {
             BufferedReader inReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while(!socket.isClosed()) {
-                String message = inReader.readLine();
+                String message = inReader.readLine();/*
+                try {
+                    wait();
+                }
+                catch (InterruptedException e) {
+                    server.getIO().error("InterruptedException occurred when trying to wait.");
+                }*/
                 if (message!=null) {
                     if (!message.equals("")) {
                         try {
@@ -57,13 +63,13 @@ public class ServerUserThread extends Thread {
                     socket.close();
                     server.removeClient(this);
                     return; //Stop this thread from running
-                }
+                }/*
                 try {
                     Thread.sleep(500);
                 }
                 catch (InterruptedException e) {
                     server.getIO().error("InterruptedException occurred when trying to sleep.");
-                }
+                }*/
             }
         }
         catch (IOException e) {

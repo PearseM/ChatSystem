@@ -22,13 +22,13 @@ public class ClientInputThread extends Thread {
             catch (ExitException e) {
                 System.out.println(e.getMessage());
                 System.exit(0);
-            }
+            }/*
             try {
                 Thread.sleep(500);
             }
             catch (InterruptedException e) {
                 client.getIO().error("InterruptedException occurred when trying to read messages from user.");
-            }
+            }*/
         }
     }
 }

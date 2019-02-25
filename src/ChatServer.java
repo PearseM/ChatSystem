@@ -56,13 +56,13 @@ public class ChatServer {
             }
             catch (IOException e) {
                 inputOutput.error("IOException occurred when trying to accept connection.");
-            }
+            }/*
             try {
                 Thread.sleep(500);
             }
             catch (InterruptedException e) {
                 inputOutput.error("InterruptedException occurred while accepting connections.");
-            }
+            }*/
         }
     }
 
