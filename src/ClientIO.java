@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class ClientIO extends InputOutput {
     private ChatClientGUI gui;
 
@@ -7,6 +9,11 @@ public class ClientIO extends InputOutput {
      */
     public ClientIO(boolean useGUI) {
         super(useGUI);
+        if (useGUI) {
+            SwingUtilities.invokeLater(() -> {
+                gui = new ChatClientGUI();
+            });
+        }
     }
 
     /**
@@ -17,22 +24,12 @@ public class ClientIO extends InputOutput {
         return new Message(readConsole(), name);
     }
 
-    public void setGUI(ChatClientGUI gui) {
-        super.setGUI(gui);
-        this.gui = gui;
-    }
-
     /**
      * Writes message to the relevant output. If the output is the GUI, messages are drawn on the right side by default.
      * @param message The message to display.
      */
     protected void write(Message message) {
-        if (isUsingGUI()) {
-            gui.generateMessage(message, 1);
-        }
-        else {
-            System.out.println(message);
-        }
+        write(message, true);
     }
 
     /**
@@ -50,7 +47,7 @@ public class ClientIO extends InputOutput {
             else {
                 side = 0;
             }
-            gui.generateMessage(message, side);
+            SwingUtilities.invokeLater(() -> gui.generateMessage(message, side));
         }
         else {
             System.out.println(message);

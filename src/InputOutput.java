@@ -1,6 +1,8 @@
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 
 public abstract class InputOutput {
     private boolean useGUI;
@@ -20,7 +22,18 @@ public abstract class InputOutput {
      */
     protected void error(String errorDescription) {
         if (isUsingGUI()) {
-            gui.writeError(errorDescription);
+            try {
+                /* This invokeAndWait is necessary so that the program will wait until the error message has been
+                 * displayed before exiting.
+                 */
+                SwingUtilities.invokeAndWait(() -> GUI.writeError(errorDescription));
+            }
+            catch (InvocationTargetException e) {
+                System.out.println("InvocationTargetException occurred while trying to display an error message.");
+            }
+            catch (InterruptedException e) {
+                System.out.println("InterruptedException occurred while trying to display an error message.");
+            }
         }
         else {
             write("ERROR:" + errorDescription);
@@ -43,12 +56,21 @@ public abstract class InputOutput {
      */
     protected String prompt(String desiredOutput) throws ExitException{
         if (useGUI) {
-            return gui.promptUserForInput(desiredOutput);
+            try {
+                SwingUtilities.invokeAndWait(() -> gui.promptUserForInput(desiredOutput));
+
+            }
+            catch (InterruptedException e) {
+                error("InterruptedException occurred while trying to prompt the user.");
+            } catch (InvocationTargetException e) {
+                error("InvocationTargetException occurred while trying to prompt the user.");
+            }
         }
         else {
             System.out.println(desiredOutput);
             return readConsole();
         }
+        return gui.promptUserForInput(desiredOutput);
     }
 
     /**
@@ -113,7 +135,7 @@ public abstract class InputOutput {
      */
     protected void write(String desiredOutput) {
         if (isUsingGUI()) {
-            gui.writeInfo(desiredOutput);
+            SwingUtilities.invokeLater(() -> GUI.writeInfo(desiredOutput));
         }
         else {
             System.out.println(desiredOutput);

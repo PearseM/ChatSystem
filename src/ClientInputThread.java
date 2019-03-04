@@ -16,7 +16,7 @@ public class ClientInputThread extends Thread {
     public void run() {
         while (true) {
             try {
-                Message inputMessage = client.getIO().getMessage(client.getName());
+                Message inputMessage = client.getIO().getMessage(client.getUserName());
                 client.getServerThread().sendMessage(inputMessage);
             }
             catch (ExitException e) {

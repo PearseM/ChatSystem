@@ -19,8 +19,6 @@ public class MessagePanel extends JPanel {
         messageContent.setOpaque(false);
         messageContent.setPreferredSize(new Dimension(180, messageContent.getPreferredSize().height));
         messageContent.setAlignmentX(Component.LEFT_ALIGNMENT);
-        setPreferredSize(messageContent.getPreferredSize());
-        revalidate();
         add(messageContent);
 
     }

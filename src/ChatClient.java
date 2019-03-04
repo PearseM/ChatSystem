@@ -1,12 +1,15 @@
+import javax.swing.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ChatClient {
+public class ChatClient extends Thread {
     private Socket socket;
     private ClientIO inputOutput;
     private ClientServerThread serverThread;
     private final String name;
+    private int port;
+    private String hostname;
 
     /**
      * Constructs a ChatClient object which provides the basis of the messaging client.
@@ -18,6 +21,12 @@ public class ChatClient {
     public ChatClient(int port, String hostname, ClientIO inputOutput, String name) {
         this.inputOutput = inputOutput;
         this.name = name;
+        this.port = port;
+        this.hostname = hostname;
+    }
+
+    @Override
+    public void run() {
         if (!connectToSocket(hostname, port)) {
             inputOutput.error("Could not connect to server. Please try running the program again.");
             System.exit(1);
@@ -83,12 +92,13 @@ public class ChatClient {
     /**
      * @return The user's chosen name.
      */
-    protected String getName() {
+    protected String getUserName() {
         return name;
     }
 
     public static void main(String[] args) {
-        ChatClientGUI gui = null;
+        GUILauncher guiLauncher = new GUILauncher();
+
         boolean useGUI = false;
         int port = 14001;
         String hostname = "localhost";
@@ -120,8 +130,6 @@ public class ChatClient {
                         break;
                     case "-gui":
                         useGUI = true;
-                        //Starts the GUI
-                        gui = new ChatClientGUI();
                         break;
                     default:
                         System.out.println("Flag \"" + args[i] + "\"not recognised.");
@@ -129,37 +137,25 @@ public class ChatClient {
                 }
             }
         }
-        ClientIO inputOutput = new ClientIO(useGUI);
         if (useGUI) {
-            inputOutput.setGUI(gui);
+            final int portFinal = port;
+            final String hostnameFinal = hostname;
+            SwingUtilities.invokeLater(() -> ChatClientGUI.launchGUI(portFinal, hostnameFinal));
+        }
+        else {
+            ClientIO inputOutput = new ClientIO(false);
+            String name = "Anonymous";
             try {
-                String hostInput = inputOutput.prompt("Please enter the IP address of the server you would like to " +
-                        "connect to. The default is localhost.");
-                if (hostInput != null) {
-                    hostname = hostInput;
+                String inputName = inputOutput.prompt("Please enter a nickname:");
+                if (inputName != null) {
+                    name = inputName;
                 }
-            }
-            catch (ExitException e) {
+            } catch (ExitException e) {
                 System.out.println(e.getMessage());
                 System.exit(0);
             }
-            port = inputOutput.promptForPort();
-        }
-        String name = "Anonymous";
-        try {
-            String inputName = inputOutput.prompt("Please enter a nickname:");
-            if (inputName != null) {
-                name = inputName;
-            }
-        }
-        catch (ExitException e) {
-            System.out.println(e.getMessage());
-            System.exit(0);
-        }
-        ChatClient client = new ChatClient(port, hostname, inputOutput, name);
-        //Pass the newly created client object to the GUI, if the program is being used in GUI mode.
-        if (useGUI) {
-            gui.setClient(client);
+            ChatClient client = new ChatClient(port, hostname, inputOutput, name);
+            client.start();
         }
     }
 }

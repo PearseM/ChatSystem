@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ChatClientGUI implements GUI {
     private JTextField messageInput;
@@ -17,7 +19,7 @@ public class ChatClientGUI implements GUI {
         JFrame frame = new JFrame("Chatting System");
         //Creates the text field for user message input
         messageInput = new JTextField();
-        messageInput.addActionListener(new SendMessageAction(this));
+        messageInput.addActionListener(new SendMessageAction());
         messageInput.setPreferredSize(new Dimension(500, 40));
         messageInput.setMaximumSize(messageInput.getPreferredSize());
         messageInput.setMinimumSize(new Dimension(100, 40));
@@ -26,7 +28,21 @@ public class ChatClientGUI implements GUI {
         //Creates the messages container in which all of the MessagePanel objects are placed
         messagesContainer = new JPanel();
         messagesContainer.setLayout(new GridBagLayout());
-        messageRow = 0;
+
+        //Adds placeholder panels at the top to initialize the grid layout
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.PAGE_START;
+        JPanel left = new JPanel();
+        left.setPreferredSize(new Dimension(200,10));
+        messagesContainer.add(left, constraints);
+        constraints.gridx = 1;
+        JPanel right = new JPanel();
+        right.setPreferredSize(new Dimension(200,10));
+        messagesContainer.add(right, constraints);
+        messageRow = 1;
+        messagesContainer.revalidate();
 
         //Creates the scroll pane which contains the messageContainer, such that the user can scroll to see messages
         scrollPane = new JScrollPane(messagesContainer,
@@ -55,6 +71,7 @@ public class ChatClientGUI implements GUI {
         frame.setContentPane(chatPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
@@ -70,6 +87,9 @@ public class ChatClientGUI implements GUI {
     public void generateMessage(Message message, int side) {
         MessagePanel mp = new MessagePanel();
         mp.initialiseMessage(message);
+        JComponent messageContent = (JComponent) mp.getComponents()[0];
+        mp.setPreferredSize(messageContent.getSize());
+        mp.setMaximumSize(messageContent.getSize());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.insets = new Insets(10, 0, 10, 0);
@@ -85,19 +105,97 @@ public class ChatClientGUI implements GUI {
         scrollPaneToBottom();
     }
 
-    /**
-     * @return The main client object.
-     */
-    public ChatClient getClient() {
-        return client;
-    }
+    public static void launchGUI(int port, String hostname) {
+        JFrame frame = new JFrame("Chatting System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    //TODO review whether the entire TextField needs to returned
-    /**
-     * @return The text field which the user
-     */
-    public JTextField getMessageInput() {
-        return messageInput;
+        JLabel title = new JLabel("Connect to a chat server");
+        title.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setFont(new Font("Arial", Font.PLAIN, 30));
+
+        Font textFieldFont = new Font("Arial", Font.PLAIN, 20);
+
+        JLabel portLabel = new JLabel("Port:");
+        portLabel.setFont(textFieldFont);
+        JLabel hostnameLabel = new JLabel("Hostname:");
+        hostnameLabel.setFont(textFieldFont);
+        JLabel nicknameLabel = new JLabel("Nickname:");
+        nicknameLabel.setFont(textFieldFont);
+
+        JTextField portField = new JTextField(5);
+        portField.setFont(textFieldFont);
+        portField.setText(Integer.toString(port));
+        JTextField hostnameField = new JTextField(40);
+        hostnameField.setFont(textFieldFont);
+        hostnameField.setText(hostname);
+        JTextField nicknameField = new JTextField(40);
+        nicknameField.setFont(textFieldFont);
+
+        JPanel inputsPanel = new JPanel();
+        inputsPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 0, 200));
+        inputsPanel.setLayout(new GridLayout(3, 2));
+
+        inputsPanel.add(portLabel);
+        inputsPanel.add(portField);
+        inputsPanel.add(hostnameLabel);
+        inputsPanel.add(hostnameField);
+        inputsPanel.add(nicknameLabel);
+        inputsPanel.add(nicknameField);
+
+        JButton connectButton = new JButton("Connect");
+        connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 200, 0));
+        connectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int portInt;
+                if (portField.getText().equals("")
+                        | hostnameField.getText().equals("")
+                        | nicknameField.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null, "Please enter values in the fields.");
+                    return;
+                }
+                try {
+                    portInt = Integer.parseInt(portField.getText());
+                }
+                catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "The port must be an integer.");
+                    portField.setText("14001");
+                    return;
+                }
+                if (portInt < 0 | portInt > 65535) {
+                    JOptionPane.showMessageDialog(null, "Port number must be between 0 and 65535.");
+                    portField.setText("14001");
+                    return;
+                }
+                if (nicknameField.getText().contains("{") | nicknameField.getText().contains("}")) {
+                    JOptionPane.showMessageDialog(null, "Nickname may not contain '{' or '}'");
+                    return;
+                }
+
+                SendMessageAction.name = nicknameField.getText();
+
+                ChatClient client = new ChatClient(portInt,
+                        hostnameField.getText(),
+                        new ClientIO(true),
+                        nicknameField.getText());
+                frame.setVisible(false);
+                client.start();
+            }
+        });
+
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
+        container.add(title);
+        container.add(new JSeparator(SwingConstants.HORIZONTAL));
+        container.add(inputsPanel);
+        container.add(connectButton);
+
+        frame.setContentPane(container);
+        frame.setSize(new Dimension(800, 600));
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     /**
@@ -105,7 +203,7 @@ public class ChatClientGUI implements GUI {
      * @param message Instructions telling the user what they should input.
      * @return The user's input.
      */
-    public String promptUserForInput(String message) {
+    public synchronized String promptUserForInput(String message) {
         return JOptionPane.showInputDialog(message);
     }
 
@@ -115,35 +213,6 @@ public class ChatClientGUI implements GUI {
     public void scrollPaneToBottom() {
         JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
         scrollBar.setValue(scrollBar.getMaximum());
-    }
-
-    /**
-     * @param client The main client object.
-     */
-    public void setClient(ChatClient client) {
-        this.client = client;
-    }
-
-    /**
-     * Creates a dialog which displays the error message.
-     * @param errorMessage The error message to display.
-     */
-    public void writeError(String errorMessage) {
-        JOptionPane optionPane = new JOptionPane(errorMessage, JOptionPane.ERROR_MESSAGE);
-        JDialog dialog = optionPane.createDialog("Error");
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
-    }
-
-    /**
-     * Creates a dialog which displays the information.
-     * @param information The error message to display.
-     */
-    public void writeInfo(String information) {
-        JOptionPane optionPane = new JOptionPane(information, JOptionPane.INFORMATION_MESSAGE);
-        JDialog dialog = optionPane.createDialog("Information");
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
     }
 }
 
