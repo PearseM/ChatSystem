@@ -57,7 +57,7 @@ public abstract class InputOutput {
     protected String prompt(String desiredOutput) throws ExitException{
         if (useGUI) {
             try {
-                SwingUtilities.invokeAndWait(() -> gui.promptUserForInput(desiredOutput));
+                SwingUtilities.invokeAndWait(() -> GUI.promptUserForInput(desiredOutput));
 
             }
             catch (InterruptedException e) {
@@ -70,31 +70,7 @@ public abstract class InputOutput {
             System.out.println(desiredOutput);
             return readConsole();
         }
-        return gui.promptUserForInput(desiredOutput);
-    }
-
-    /**
-     * Specialised variant of prompt to get the port and validate it.
-     * @return The user's chosen port or 14001 if their chosen port is invalid.
-     */
-    protected int promptForPort() {
-        String portInput;
-        try {
-            portInput = prompt("Please enter a port number. The default is 14001.");
-            if (portInput == null) {
-                return 14001;
-            }
-            int port = Integer.parseInt(portInput);
-            return (port>=0 && port<=65535) ? port:14001;
-        }
-        catch (NumberFormatException e) {
-            promptForPort();
-        }
-        catch (ExitException e) {
-            System.out.println(e.getMessage());
-            System.exit(0);
-        }
-        return 14001;
+        return GUI.promptUserForInput(desiredOutput);
     }
 
     /**
@@ -120,13 +96,6 @@ public abstract class InputOutput {
                 error("IOException occurred while trying to read from console.");
             }
         }
-    }
-
-    /**
-     * @param gui The GUI instance being used.
-     */
-    public void setGUI(GUI gui) {
-        this.gui = gui;
     }
 
     /**

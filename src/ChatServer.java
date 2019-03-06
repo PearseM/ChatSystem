@@ -1,9 +1,10 @@
+import javax.swing.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ChatServer {
+public class ChatServer extends Thread {
     private ServerSocket serverSocket;
     private ServerIO inputOutput;
     private ArrayList<ServerUserThread> clients = new ArrayList<>();
@@ -42,7 +43,7 @@ public class ChatServer {
     /**
      * Waits for users to join the server.
      */
-    private void initialize() {
+    public void run() {
         inputOutput.write("Server listening.");
 
         while (true) {
@@ -56,13 +57,7 @@ public class ChatServer {
             }
             catch (IOException e) {
                 inputOutput.error("IOException occurred when trying to accept connection.");
-            }/*
-            try {
-                Thread.sleep(500);
             }
-            catch (InterruptedException e) {
-                inputOutput.error("InterruptedException occurred while accepting connections.");
-            }*/
         }
     }
 
@@ -98,14 +93,18 @@ public class ChatServer {
                     System.out.println("Using default port and hostname.");
             }
         }
-        ServerIO inputOutput = new ServerIO(useGUI);
-        //Sets up a thread to wait for commands from the console
-        ServerReadConsoleThread readThread = new ServerReadConsoleThread(inputOutput);
-        readThread.start();
+
         if (useGUI) {
-            port = inputOutput.promptForPort();
+            final int portFinal = port;
+            SwingUtilities.invokeLater(() -> ChatServerGUI.launchGUI(portFinal));
         }
-        ChatServer server = new ChatServer(port, inputOutput);
-        server.initialize();
+        else {
+            ServerIO inputOutput = new ServerIO(false);
+            //Sets up a thread to wait for commands from the console
+            ServerReadConsoleThread readThread = new ServerReadConsoleThread(inputOutput);
+            readThread.start();
+            ChatServer server = new ChatServer(port, inputOutput);
+            server.start();
+        }
     }
 }

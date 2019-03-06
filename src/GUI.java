@@ -1,12 +1,12 @@
 import javax.swing.*;
 
-public interface GUI {
+public abstract class GUI {
 
     /**
      * Creates a dialog which displays the error message.
      * @param errorMessage The error message to display.
      */
-    static void writeError(String errorMessage) {
+    public static synchronized void writeError(String errorMessage) {
         JOptionPane optionPane = new JOptionPane(errorMessage, JOptionPane.ERROR_MESSAGE);
         JDialog dialog = optionPane.createDialog("Error");
         dialog.setAlwaysOnTop(true);
@@ -17,7 +17,7 @@ public interface GUI {
      * Creates a dialog which displays the information.
      * @param information The error message to display.
      */
-    static void writeInfo(String information) {
+    public static synchronized void writeInfo(String information) {
         JOptionPane optionPane = new JOptionPane(information, JOptionPane.INFORMATION_MESSAGE);
         JDialog dialog = optionPane.createDialog("Information");
         dialog.setAlwaysOnTop(true);
@@ -25,10 +25,11 @@ public interface GUI {
     }
 
     /**
-     * Prompts the user to enter text.
-     * @param message Instructions to the user.
-     * @return The text which the user has input.
+     * Creates a dialog which waits for a user to input text.
+     * @param message Instructions telling the user what they should input.
+     * @return The user's input.
      */
-    String promptUserForInput(String message);
-
+    public static synchronized String promptUserForInput(String message) {
+        return JOptionPane.showInputDialog(message);
+    }
 }

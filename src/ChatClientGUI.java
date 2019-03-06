@@ -1,8 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 
-public class ChatClientGUI implements GUI {
+public class ChatClientGUI {
     private JPanel chatPane;
     private JPanel messagesContainer;
     private JScrollPane scrollPane;
@@ -132,9 +131,9 @@ public class ChatClientGUI implements GUI {
         JTextField nicknameField = new JTextField(40);
         nicknameField.setFont(textFieldFont);
 
-        portField.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
-        hostnameField.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
-        nicknameField.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
+        portField.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
+        hostnameField.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
+        nicknameField.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
 
         JPanel inputsPanel = new JPanel();
         inputsPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 0, 200));
@@ -150,7 +149,7 @@ public class ChatClientGUI implements GUI {
         JButton connectButton = new JButton("Connect");
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 200, 0));
-        connectButton.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
+        connectButton.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
 
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
@@ -163,15 +162,6 @@ public class ChatClientGUI implements GUI {
         frame.setSize(new Dimension(800, 600));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-    /**
-     * Creates a dialog which waits for a user to input text.
-     * @param message Instructions telling the user what they should input.
-     * @return The user's input.
-     */
-    public synchronized String promptUserForInput(String message) {
-        return JOptionPane.showInputDialog(message);
     }
 
     /**
