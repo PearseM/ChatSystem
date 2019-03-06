@@ -4,6 +4,11 @@ import java.awt.event.ActionEvent;
 public class SendMessageAction extends AbstractAction {
     public static ClientServerThread serverThread;
     public static String name;
+    private JTextField inputField;
+
+    public SendMessageAction(JTextField inputField) {
+        this.inputField = inputField;
+    }
 
     /**
      * Gets input from the message text field and sends it to the server.
@@ -11,9 +16,13 @@ public class SendMessageAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        JTextField input = (JTextField) e.getSource();
-        Message message = new Message(input.getText(), name);
+        String text = inputField.getText();
+        if (text.contains("{") || text.contains("}")) {
+            SwingUtilities.invokeLater(() -> GUI.writeInfo("Message cannot contain '{' or '}'!"));
+            return;
+        }
+        Message message = new Message(text, name);
         serverThread.sendMessage(message);
-        input.setText("");
+        inputField.setText("");
     }
 }

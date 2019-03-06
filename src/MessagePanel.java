@@ -3,11 +3,9 @@ import java.awt.*;
 
 public class MessagePanel extends JPanel {
 
-    /**
-     * Sets up the display properties of the new message panel.
-     * @param message The message to print on the screen.
-     */
-    public void initialiseMessage(Message message) {
+    public MessagePanel(Message message) {
+        super();
+        setLayout(new BorderLayout());
         String cssProperties = "color: white; font-family: Arial;";
         String messageText =
                 "<html>" +
@@ -19,8 +17,10 @@ public class MessagePanel extends JPanel {
         messageContent.setOpaque(false);
         messageContent.setPreferredSize(new Dimension(180, messageContent.getPreferredSize().height));
         messageContent.setAlignmentX(Component.LEFT_ALIGNMENT);
-        add(messageContent);
-
+        messageContent.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
+        add(messageContent, BorderLayout.CENTER);
+        setPreferredSize(new Dimension(200, (messageContent.getPreferredSize().height + 20)));
+        setMaximumSize(getPreferredSize());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class MessagePanel extends JPanel {
 
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(200, 200);
+        return new Dimension(200, 50);
     }
 
     @Override
@@ -41,10 +41,9 @@ public class MessagePanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics roundedRectangle = g;
+        Graphics roundedRectangle = g.create();
         roundedRectangle.setColor(Color.red);
-        Dimension preferredSize = getPreferredSize();
-        roundedRectangle.fillRoundRect(0, 0, (int) preferredSize.getWidth(), (int) preferredSize.getHeight(), 20, 20);
+        roundedRectangle.fillRoundRect(0, 0, 200, (int) getPreferredSize().getHeight(), 40, 40);
     }
 }
 

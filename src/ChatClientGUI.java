@@ -1,14 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 
 public class ChatClientGUI implements GUI {
-    private JTextField messageInput;
     private JPanel chatPane;
     private JPanel messagesContainer;
     private JScrollPane scrollPane;
-    private ChatClient client;
     private int messageRow;
 
     /**
@@ -17,13 +14,15 @@ public class ChatClientGUI implements GUI {
     public ChatClientGUI() {
         //Creates the main window
         JFrame frame = new JFrame("Chatting System");
+
+        Font font = new Font("basicFont", Font.PLAIN, 22);
         //Creates the text field for user message input
-        messageInput = new JTextField();
-        messageInput.addActionListener(new SendMessageAction());
+        JTextField messageInput = new JTextField();
+        messageInput.addActionListener(new SendMessageAction(messageInput));
         messageInput.setPreferredSize(new Dimension(500, 40));
         messageInput.setMaximumSize(messageInput.getPreferredSize());
         messageInput.setMinimumSize(new Dimension(100, 40));
-        messageInput.setFont(new Font("basicFont", Font.PLAIN, 22));
+        messageInput.setFont(font);
 
         //Creates the messages container in which all of the MessagePanel objects are placed
         messagesContainer = new JPanel();
@@ -52,9 +51,13 @@ public class ChatClientGUI implements GUI {
 
         //Creates the bottom bar which houses the message input
         JPanel bottomBar = new JPanel();
+        JButton sendMessageButton = new JButton("Send");
+        sendMessageButton.setFont(font);
+        sendMessageButton.addActionListener(new SendMessageAction(messageInput));
         bottomBar.setLayout(new BoxLayout(bottomBar, BoxLayout.X_AXIS));
         bottomBar.add(Box.createRigidArea(new Dimension(100, -1)));
         bottomBar.add(messageInput);
+        bottomBar.add(sendMessageButton);
         bottomBar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         bottomBar.setBackground(Color.LIGHT_GRAY);
         bottomBar.setPreferredSize(new Dimension(-1, 60));
@@ -84,15 +87,12 @@ public class ChatClientGUI implements GUI {
      *              <li>1 = Right</li>
      *             </ul>
      */
-    public void generateMessage(Message message, int side) {
-        MessagePanel mp = new MessagePanel();
-        mp.initialiseMessage(message);
-        JComponent messageContent = (JComponent) mp.getComponents()[0];
-        mp.setPreferredSize(messageContent.getSize());
-        mp.setMaximumSize(messageContent.getSize());
+    public synchronized void generateMessage(Message message, int side) {
+        MessagePanel mp = new MessagePanel(message);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.insets = new Insets(10, 0, 10, 0);
+        constraints.fill = GridBagConstraints.VERTICAL;
         if (side==0) {
             constraints.gridx = 0;
         }
@@ -132,6 +132,10 @@ public class ChatClientGUI implements GUI {
         JTextField nicknameField = new JTextField(40);
         nicknameField.setFont(textFieldFont);
 
+        portField.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
+        hostnameField.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
+        nicknameField.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
+
         JPanel inputsPanel = new JPanel();
         inputsPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 0, 200));
         inputsPanel.setLayout(new GridLayout(3, 2));
@@ -146,44 +150,7 @@ public class ChatClientGUI implements GUI {
         JButton connectButton = new JButton("Connect");
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 200, 0));
-        connectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int portInt;
-                if (portField.getText().equals("")
-                        | hostnameField.getText().equals("")
-                        | nicknameField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(null, "Please enter values in the fields.");
-                    return;
-                }
-                try {
-                    portInt = Integer.parseInt(portField.getText());
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "The port must be an integer.");
-                    portField.setText("14001");
-                    return;
-                }
-                if (portInt < 0 | portInt > 65535) {
-                    JOptionPane.showMessageDialog(null, "Port number must be between 0 and 65535.");
-                    portField.setText("14001");
-                    return;
-                }
-                if (nicknameField.getText().contains("{") | nicknameField.getText().contains("}")) {
-                    JOptionPane.showMessageDialog(null, "Nickname may not contain '{' or '}'");
-                    return;
-                }
-
-                SendMessageAction.name = nicknameField.getText();
-
-                ChatClient client = new ChatClient(portInt,
-                        hostnameField.getText(),
-                        new ClientIO(true),
-                        nicknameField.getText());
-                frame.setVisible(false);
-                client.start();
-            }
-        });
+        connectButton.addActionListener(new LaunchClientAction(portField, hostnameField, nicknameField));
 
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));

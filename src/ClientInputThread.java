@@ -17,18 +17,18 @@ public class ClientInputThread extends Thread {
         while (true) {
             try {
                 Message inputMessage = client.getIO().getMessage(client.getUserName());
-                client.getServerThread().sendMessage(inputMessage);
+                String messageContent = inputMessage.getContent();
+                if (messageContent.contains("{") || messageContent.contains("}")) {
+                    client.getIO().write("Message may not contain '{' or '}'!");
+                }
+                else {
+                    client.getServerThread().sendMessage(inputMessage);
+                }
             }
             catch (ExitException e) {
                 System.out.println(e.getMessage());
                 System.exit(0);
-            }/*
-            try {
-                Thread.sleep(500);
             }
-            catch (InterruptedException e) {
-                client.getIO().error("InterruptedException occurred when trying to read messages from user.");
-            }*/
         }
     }
 }
