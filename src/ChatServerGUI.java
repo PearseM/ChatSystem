@@ -39,18 +39,18 @@ public class ChatServerGUI {
         messageListModel = new DefaultListModel<>();
         JList messagesTextList = new JList<>(messageListModel);
         messagesTextList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        messagesTextList.setLayoutOrientation(JList.VERTICAL_WRAP);
+        messagesTextList.setLayoutOrientation(JList.VERTICAL);
         messagesTextList.setVisibleRowCount(-1);
 
         JScrollPane messagesScrollPane = new JScrollPane(messagesTextList,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         messagesScrollPane.setPreferredSize(new Dimension(600, 400));
 
         clientListModel = new DefaultListModel<>();
         JList clientsList = new JList<>(clientListModel);
         messagesTextList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        messagesTextList.setLayoutOrientation(JList.VERTICAL_WRAP);
+        messagesTextList.setLayoutOrientation(JList.VERTICAL);
         messagesTextList.setVisibleRowCount(-1);
 
         JScrollPane clientsScrollPane = new JScrollPane(clientsList,
@@ -97,7 +97,7 @@ public class ChatServerGUI {
         inputsPanel.add(portField);
         JButton connectButton = new JButton("Launch");
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 200, 0));
+        connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 330, 0));
         connectButton.addActionListener(new LaunchAction(portField));
 
         JPanel container = new JPanel();
@@ -114,15 +114,15 @@ public class ChatServerGUI {
 
     }
 
-    public void addMessage(Message message) {
+    public synchronized void addMessage(Message message) {
         messageListModel.addElement(message);
     }
 
-    public void addClient(ServerUserThread client) {
+    public synchronized void addClient(ServerUserThread client) {
         clientListModel.addElement(client);
     }
 
-    public void removeClient(ServerUserThread client) {
+    public synchronized void removeClient(ServerUserThread client) {
         clientListModel.removeElement(client);
     }
 }
