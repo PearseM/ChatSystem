@@ -53,7 +53,9 @@ public class ChatServer extends Thread {
                 inputOutput.write("Accepted connection on " + serverSocket.getLocalPort() +
                         " ; " + userSocket.getPort());
                 ServerUserThread thread = new ServerUserThread(userSocket, this, currentClientID++);
-                inputOutput.addClientInfo(thread);
+                if(inputOutput.isUsingGUI()) {
+                    inputOutput.addClientInfo(thread);
+                }
                 clients.add(thread);
                 thread.start();
             }
@@ -65,7 +67,9 @@ public class ChatServer extends Thread {
 
     public synchronized void removeClient(ServerUserThread client) {
         clients.remove(client);
-        inputOutput.removeClient(client);
+        if (inputOutput.isUsingGUI()) {
+            inputOutput.removeClient(client);
+        }
         inputOutput.write("User disconnected.");
     }
 

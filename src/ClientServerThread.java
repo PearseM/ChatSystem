@@ -66,6 +66,7 @@ public class ClientServerThread extends Thread {
             }
             catch (IOException e) {
                 client.getIO().error("IOException occurred when trying to read from socket.");
+                System.exit(0);
             }
         }
         client.getIO().error("Exiting because connection to server has been lost.");
