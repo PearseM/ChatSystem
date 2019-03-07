@@ -8,6 +8,7 @@ public class ChatServer extends Thread {
     private ServerSocket serverSocket;
     private ServerIO inputOutput;
     private ArrayList<ServerUserThread> clients = new ArrayList<>();
+    private int currentClientID = 0;
 
     /**
      * Constructs a ChatServer object which is the basis of the server functionality.
@@ -51,7 +52,8 @@ public class ChatServer extends Thread {
                 Socket userSocket = serverSocket.accept();
                 inputOutput.write("Accepted connection on " + serverSocket.getLocalPort() +
                         " ; " + userSocket.getPort());
-                ServerUserThread thread = new ServerUserThread(userSocket, this);
+                ServerUserThread thread = new ServerUserThread(userSocket, this, currentClientID++);
+                inputOutput.addClientInfo(thread);
                 clients.add(thread);
                 thread.start();
             }
@@ -63,6 +65,7 @@ public class ChatServer extends Thread {
 
     public synchronized void removeClient(ServerUserThread client) {
         clients.remove(client);
+        inputOutput.removeClient(client);
         inputOutput.write("User disconnected.");
     }
 

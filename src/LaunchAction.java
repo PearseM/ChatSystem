@@ -70,6 +70,7 @@ public class LaunchAction extends AbstractAction {
             client.start();
         }
         else {
+            ChatServerGUI.port = portInt;
             ChatServer server = new ChatServer(portInt, new ServerIO(true));
             ((JComponent) e.getSource()).getTopLevelAncestor().setVisible(false);
             server.start();

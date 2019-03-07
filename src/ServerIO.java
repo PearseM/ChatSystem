@@ -16,6 +16,10 @@ public class ServerIO extends InputOutput {
         }
     }
 
+    protected void addClientInfo(ServerUserThread client) {
+        gui.addClient(client);
+    }
+
     @Override
     protected void write(Message message) {
         if (isUsingGUI()) {
@@ -24,5 +28,9 @@ public class ServerIO extends InputOutput {
         else {
             System.out.println(message);
         }
+    }
+
+    protected void removeClient(ServerUserThread client) {
+        gui.removeClient(client);
     }
 }

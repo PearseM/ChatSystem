@@ -8,15 +8,17 @@ import java.text.ParseException;
 public class ServerUserThread extends Thread {
     private Socket socket;
     private ChatServer server;
+    private int clientID;
 
     /**
      * Constructs a new thread to maintain a socket with a user.
      * @param socket The opened user socket.
      * @param server The server instance that created this thread.
      */
-    public ServerUserThread(Socket socket, ChatServer server) {
+    public ServerUserThread(Socket socket, ChatServer server, int clientID) {
         this.socket = socket;
         this.server = server;
+        this.clientID = clientID;
     }
 
     /**
@@ -93,5 +95,11 @@ public class ServerUserThread extends Thread {
                 server.getIO().error("IOException occurred when trying to write to output stream.");
             }
         }
+    }
+
+
+    @Override
+    public String toString() {
+        return "Port: " + socket.getPort() + " | Client ID: " + clientID;
     }
 }
