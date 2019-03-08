@@ -17,15 +17,16 @@ public class ChatServerGUI {
 
         JLabel portInfo = new JLabel();
         portInfo.setText("Port: " + port);
-        JLabel ipInfo = new JLabel();
+        JLabel ipInfo = new JLabel();/*
         try {
+            //Pings AWS to find out the server's external ip address
             URL ipChecker = new URL("http://checkip.amazonaws.com");
             BufferedReader br = new BufferedReader(new InputStreamReader(ipChecker.openStream()));
             ipInfo.setText("External IP Address: " + br.readLine());
         }
         catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
