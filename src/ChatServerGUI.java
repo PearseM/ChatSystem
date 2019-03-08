@@ -3,7 +3,9 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 
 public class ChatServerGUI {
     private DefaultListModel<Message> messageListModel;
@@ -19,15 +21,22 @@ public class ChatServerGUI {
         portInfo.setText("Port: " + port);
         JLabel ipInfo = new JLabel();
         try {
-            //Pings AWS to find out the server's external ip address
-            URL ipChecker = new URL("http://checkip.amazonaws.com");
-            BufferedReader br = new BufferedReader(new InputStreamReader(ipChecker.openStream()));
-            String ipAddress = br.readLine();
-            System.out.println(ipAddress);
-            ipInfo.setText("External IP Address: " + ipAddress);
+            //Pings AWS to find out the server's external ip address(s)
+            URL ipCheckerURL = new URL("http://checkip.amazonaws.com");
+            URLConnection ipCheckerConnection = ipCheckerURL.openConnection();
+            //Times out if connection cannot be established within 2 seconds, and if nothing can be read within 3s.
+            ipCheckerConnection.setConnectTimeout(2000);
+            ipCheckerConnection.setReadTimeout(3000);
+            BufferedReader br = new BufferedReader(new InputStreamReader(ipCheckerConnection.getInputStream()));
+            String ipAddressFeed = br.readLine();
+            //The first ip address is output to the user (sometimes multiple addresses are returned by AWS)
+            ipInfo.setText("External IP Address: " + ipAddressFeed.split(",")[0]);
+        }
+        catch (SocketTimeoutException e) {
+            ipInfo.setText("External IP Address: Could not be determined");
         }
         catch (IOException e) {
-            e.printStackTrace();
+            GUI.writeError("IOException occurred while trying to determine external ip address.");
         }
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
