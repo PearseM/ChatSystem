@@ -52,7 +52,7 @@ public class ClientIO extends InputOutput {
             SwingUtilities.invokeLater(() -> gui.generateMessage(message, side));
         }
         else {
-            System.out.println(message);
+            super.write(message);
         }
     }
 

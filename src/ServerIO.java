@@ -31,7 +31,7 @@ public class ServerIO extends InputOutput {
             SwingUtilities.invokeLater(() -> gui.addMessage(message));
         }
         else {
-            System.out.println(message);
+            super.write(message);
         }
     }
 

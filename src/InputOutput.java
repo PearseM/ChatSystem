@@ -111,5 +111,7 @@ public abstract class InputOutput {
      * Writes to the relevant output.
      * @param message The message to be output.
      */
-    protected abstract void write(Message message);
+    protected void write(Message message) {
+        System.out.println(message);
+    }
 }
