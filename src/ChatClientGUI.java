@@ -14,7 +14,8 @@ public class ChatClientGUI {
         //Creates the main window
         JFrame frame = new JFrame("Chatting System");
 
-        Font font = new Font("basicFont", Font.PLAIN, 22);
+        Font font = new Font("Arial", Font.PLAIN, 22);
+
         //Creates the text field for user message input
         JTextField messageInput = new JTextField();
         messageInput.addActionListener(new SendMessageAction(messageInput));
@@ -46,9 +47,10 @@ public class ChatClientGUI {
         scrollPane = new JScrollPane(messagesContainer,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); //Speeds up scrolling
+        //Speeds up scrolling
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        //Creates the bottom bar which houses the message input
+        //Creates the bottom bar which houses the message input and send button
         JPanel bottomBar = new JPanel();
         JButton sendMessageButton = new JButton("Send");
         sendMessageButton.setFont(font);
@@ -69,7 +71,7 @@ public class ChatClientGUI {
         chatPane.add(scrollPane, BorderLayout.CENTER);
         chatPane.add(bottomBar, BorderLayout.PAGE_END);
 
-        //Adds everything to the main frame
+        //Adds everything to the main frame and displays it
         frame.setContentPane(chatPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -86,7 +88,7 @@ public class ChatClientGUI {
      *              <li>1 = Right</li>
      *             </ul>
      */
-    public synchronized void generateMessage(Message message, int side) {
+    protected synchronized void generateMessage(Message message, int side) {
         MessagePanel mp = new MessagePanel(message);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.PAGE_START;
@@ -104,17 +106,21 @@ public class ChatClientGUI {
         scrollPaneToBottom();
     }
 
-    public static void launchGUI(int port, String hostname) {
+    /**
+     * Creates a GUI launch window with the specified default port and hostname in their respective text fields
+     * @param port The default port to be displayed
+     * @param hostname The default port to be displayed
+     */
+    protected static void launchGUI(int port, String hostname) {
+        //Creates the main window
         JFrame frame = new JFrame("Chatting System");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JLabel title = new JLabel("Connect to a chat server");
-        title.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0));
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        title.setFont(new Font("Arial", Font.PLAIN, 30));
+        JLabel title = GUI.generateTitle("Connect to a chat server");
 
         Font textFieldFont = new Font("Arial", Font.PLAIN, 20);
 
+        //Generates the field labels
         JLabel portLabel = new JLabel("Port:");
         portLabel.setFont(textFieldFont);
         JLabel hostnameLabel = new JLabel("Hostname:");
@@ -122,6 +128,7 @@ public class ChatClientGUI {
         JLabel nicknameLabel = new JLabel("Nickname:");
         nicknameLabel.setFont(textFieldFont);
 
+        //Generates the input fields
         JTextField portField = new JTextField(5);
         portField.setFont(textFieldFont);
         portField.setText(Integer.toString(port));
@@ -135,6 +142,7 @@ public class ChatClientGUI {
         hostnameField.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
         nicknameField.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
 
+        //Creates the grid panel which contains all of the input fields and their labels
         JPanel inputsPanel = new JPanel();
         inputsPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 0, 200));
         inputsPanel.setLayout(new GridLayout(3, 2));
@@ -151,23 +159,13 @@ public class ChatClientGUI {
         connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 200, 0));
         connectButton.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
 
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
-        container.add(title);
-        container.add(new JSeparator(SwingConstants.HORIZONTAL));
-        container.add(inputsPanel);
-        container.add(connectButton);
-
-        frame.setContentPane(container);
-        frame.setSize(new Dimension(800, 600));
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        GUI.outputFrame(frame, title, inputsPanel, connectButton);
     }
 
     /**
      * Scrolls the messages pane to the bottom.
      */
-    public void scrollPaneToBottom() {
+    protected void scrollPaneToBottom() {
         JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
         scrollBar.setValue(scrollBar.getMaximum());
     }

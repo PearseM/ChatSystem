@@ -10,9 +10,13 @@ import java.net.URLConnection;
 public class ChatServerGUI {
     private DefaultListModel<Message> messageListModel;
     private DefaultListModel<ServerUserThread> clientListModel;
-    public static int port = 14001;
+    protected static int port = 14001;
 
+    /**
+     * Creates a GUI for the server.
+     */
     public ChatServerGUI() {
+        //Creates the main window
         JFrame frame = new JFrame("Chatting System Server");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
@@ -38,6 +42,8 @@ public class ChatServerGUI {
         catch (IOException e) {
             GUI.writeError("IOException occurred while trying to determine external ip address.");
         }
+
+        //Creates the panel which displays the port and ip address information at the top of the window
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
@@ -48,17 +54,20 @@ public class ChatServerGUI {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
+        //Sets up the list which displays all messages
         messageListModel = new DefaultListModel<>();
         JList messagesTextList = new JList<>(messageListModel);
         messagesTextList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         messagesTextList.setLayoutOrientation(JList.VERTICAL);
         messagesTextList.setVisibleRowCount(-1);
 
+        //Makes the messages list scrollable
         JScrollPane messagesScrollPane = new JScrollPane(messagesTextList,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         messagesScrollPane.setPreferredSize(new Dimension(600, 400));
 
+        //Sets up the list which displays all of the clients
         clientListModel = new DefaultListModel<>();
         JList clientsList = new JList<>(clientListModel);
         messagesTextList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -81,60 +90,53 @@ public class ChatServerGUI {
         frame.setVisible(true);
     }
 
-    public static synchronized void launchGUI(int port) {
+    /**
+     * Displays the server launch menu and populates the port field with the specified value.
+     * @param port The desired default value to display in the port field.
+     */
+    protected static synchronized void launchGUI(int port) {
+        //Creates the menu window
         JFrame frame = new JFrame("Chatting System Server");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JLabel title = new JLabel("Open a chat server");
-        title.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0));
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        title.setFont(new Font("Arial", Font.PLAIN, 30));
+        JLabel title = GUI.generateTitle("Open a chat server");
 
         Font textFieldFont = new Font("Arial", Font.PLAIN, 20);
 
+        //Creates the port label and input field
         JLabel portLabel = new JLabel("Port:");
         portLabel.setFont(textFieldFont);
 
         JTextField portField = new JTextField(5);
         portField.setFont(textFieldFont);
         portField.setText(Integer.toString(port));
-
         portField.addActionListener(new LaunchAction(portField));
 
+        //Creates the grid panel which lays out the label and input field
         JPanel inputsPanel = new JPanel();
         inputsPanel.setBorder(BorderFactory.createEmptyBorder(50, 200, 0, 200));
         inputsPanel.setLayout(new GridLayout(1, 2));
-
         inputsPanel.add(portLabel);
         inputsPanel.add(portField);
+
         JButton connectButton = new JButton("Launch");
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 330, 0));
         connectButton.addActionListener(new LaunchAction(portField));
 
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
-        container.add(title);
-        container.add(new JSeparator(SwingConstants.HORIZONTAL));
-        container.add(inputsPanel);
-        container.add(connectButton);
-
-        frame.setContentPane(container);
-        frame.setSize(new Dimension(800, 600));
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        GUI.outputFrame(frame, title, inputsPanel, connectButton);
 
     }
 
-    public synchronized void addMessage(Message message) {
+    protected synchronized void addMessage(Message message) {
         messageListModel.addElement(message);
     }
 
-    public synchronized void addClient(ServerUserThread client) {
+    protected synchronized void addClient(ServerUserThread client) {
         clientListModel.addElement(client);
     }
 
-    public synchronized void removeClient(ServerUserThread client) {
+    protected synchronized void removeClient(ServerUserThread client) {
         clientListModel.removeElement(client);
     }
 }

@@ -19,7 +19,7 @@ public class ChatServer extends Thread {
         this.inputOutput = inputOutput;
         try {
             serverSocket = new ServerSocket(port);
-            //Adds a shutdown hook so that the socket is closed cleanly when the program is exited.
+            //Adds a shutdown hook so that the server socket is closed cleanly when the program is exited.
             Runtime.getRuntime().addShutdownHook(new ShutDownHook(serverSocket, inputOutput));
         }
         catch (IOException e) {
@@ -30,7 +30,7 @@ public class ChatServer extends Thread {
     /**
      * @return A list of all of the clients that are currently connected.
      */
-    public ArrayList<ServerUserThread> getClients() {
+    protected ArrayList<ServerUserThread> getClients() {
         return clients;
     }
 
@@ -50,10 +50,13 @@ public class ChatServer extends Thread {
         while (true) {
             try {
                 Socket userSocket = serverSocket.accept();
+                /* Outputs the actual port the connection was established on, followed by the port which the specific
+                 * socket was allocated to.
+                 */
                 inputOutput.write("Accepted connection on " + serverSocket.getLocalPort() +
                         " ; " + userSocket.getPort());
                 ServerUserThread thread = new ServerUserThread(userSocket, this, currentClientID++);
-                if(inputOutput.isUsingGUI()) {
+                if (inputOutput.isUsingGUI()) {
                     inputOutput.addClientInfo(thread);
                 }
                 clients.add(thread);
@@ -65,7 +68,11 @@ public class ChatServer extends Thread {
         }
     }
 
-    public synchronized void removeClient(ServerUserThread client) {
+    /**
+     * Removes the specified ServerUserThread representing a client from the list of clients
+     * @param client The client which you would like to remove
+     */
+    protected synchronized void removeClient(ServerUserThread client) {
         clients.remove(client);
         if (inputOutput.isUsingGUI()) {
             inputOutput.removeClient(client);
@@ -75,33 +82,48 @@ public class ChatServer extends Thread {
 
     public static void main(String[] args) {
         boolean useGUI = false;
+
+        //Sets the default port
         int port = 14001;
+
         if (args.length > 0) {
-            switch (args[0]) {
-                case "-csp":
-                    if (args.length >= 2) {
-                        try {
-                            port = Integer.parseInt(args[1]);
+            for (int i = 0; i<args.length; i++) {
+                switch (args[i]) {
+                    case "-csp":
+                        if (args.length > i+1) {
+                            try {
+                                port = Integer.parseInt(args[i+1]);
+                                //Skips the argument which follows the flag.
+                                i++;
+                            }
+                            catch (NumberFormatException e) {
+                                System.out.println(InputOutput.COLOUR_RED +
+                                        "The argument following the flag \"-csp\" should be an integer." +
+                                        InputOutput.COLOUR_RESET);
+                                System.out.println("Using default port.");
+                            }
                         }
-                        catch (NumberFormatException e) {
-                            System.out.println("The argument following the flag \"-csp\" should be an integer.");
-                            System.out.println("Using default port.");
+                        else {
+                            System.out.println(InputOutput.COLOUR_RED +
+                                    "Expected argument after \"-csp\"." +
+                                    InputOutput.COLOUR_RESET);
                         }
-                    }
-                    else {
-                        System.out.println("Expected argument after \"-csp\".");
-                    }
-                    break;
-                case "-gui":
-                    useGUI = true;
-                    break;
-                default:
-                    System.out.println("Flag \"" + args[0] + "\"not recognised.");
-                    System.out.println("Using default port and hostname.");
+                        break;
+                    case "-gui":
+                        useGUI = true;
+                        break;
+                    default:
+                        System.out.println(InputOutput.COLOUR_RED +
+                                "Flag \"" + args[i] + "\" not recognised." +
+                                InputOutput.COLOUR_RESET);
+                        System.out.println("Using default port and hostname.");
+                }
             }
         }
-
         if (useGUI) {
+            /* Instantiates final port constant to pass to the gui launcher so any potential changes to the "port"
+             * variable won't be reflected in the GUI when it is eventually run on the Event Dispatch Thread.
+             */
             final int portFinal = port;
             SwingUtilities.invokeLater(() -> ChatServerGUI.launchGUI(portFinal));
         }

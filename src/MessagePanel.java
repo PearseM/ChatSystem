@@ -3,16 +3,23 @@ import java.awt.*;
 
 public class MessagePanel extends JPanel {
 
+    /**
+     * Creates a message 'bubble' for use in the <code>ChatClientGUI</code>.
+     * @param message The message object to be displayed in the 'bubble'.
+     */
     public MessagePanel(Message message) {
         super();
         setLayout(new BorderLayout());
         String cssProperties = "color: white; font-family: Arial;";
+
+        //Defines the HTML markup of the message
         String messageText =
                 "<html>" +
                     "<h4 style=\"" + cssProperties + "\">" + message.getName() + "</h4>" +
                     "<p style=\"" + cssProperties + "\">" + message.getContent() + "</p>" +
                     "<h5 style=\"" + cssProperties + "\"><em>" + message.getDateString() + "</em></h5>" +
                 "</html>";
+
         JEditorPane messageContent = new JEditorPane("text/html", messageText);
         messageContent.setOpaque(false);
         messageContent.setPreferredSize(new Dimension(180, messageContent.getPreferredSize().height));

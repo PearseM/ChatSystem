@@ -31,11 +31,16 @@ public class ChatClient extends Thread {
             inputOutput.error("Could not connect to server. Please try running the program again.");
             System.exit(1);
         }
+        //Adds a shutdown hook so that the socket will get closed safely when the program is exited.
         Runtime.getRuntime().addShutdownHook(new ShutDownHook(socket, inputOutput));
+
         inputOutput.write("Connected to server.");
         serverThread = new ClientServerThread(socket, this);
+
         //Pass this server thread to the GUI SendMessageAction so that messages can be sent to the server upon input
         SendMessageAction.serverThread = serverThread;
+
+        //Pass this ChatClient object to the input thread so that it can access the input/output and the server thread
         ClientInputThread inputThread = new ClientInputThread(this);
         serverThread.start();
         inputThread.start();
@@ -76,6 +81,7 @@ public class ChatClient extends Thread {
     }
 
     /**
+     * Gets the thread which is maintaining the connection to the server.
      * @return The thread which is maintaining the connection to the server.
      */
     protected ClientServerThread getServerThread() {
@@ -83,6 +89,7 @@ public class ChatClient extends Thread {
     }
 
     /**
+     * Gets the instance of IO which is being used to handle inputs and outputs.
      * @return The instance of IO which is being used to handle inputs and outputs.
      */
     protected ClientIO getIO() {
@@ -90,6 +97,7 @@ public class ChatClient extends Thread {
     }
 
     /**
+     * Gets the user's chosen name.
      * @return The user's chosen name.
      */
     protected String getUserName() {
@@ -97,53 +105,73 @@ public class ChatClient extends Thread {
     }
 
     public static void main(String[] args) {
-        GUILauncher guiLauncher = new GUILauncher();
-
         boolean useGUI = false;
+
+        //Sets the default port and hostname
         int port = 14001;
         String hostname = "localhost";
+
         if (args.length > 0) {
+            //Loops through all of the command line arguments
             for (int i = 0; i < args.length; i++) {
                 switch (args[i]) {
                     case "-ccp":
-                        if (args.length >= i+1) {
+                        //Sets the port to equal the argument following "-ccp", if it exists.
+                        if (args.length > i+1) {
                             try {
                                 port = Integer.parseInt(args[i+1]);
-                            } catch (NumberFormatException e) {
-                                System.out.println("The argument following the flag \"-ccp\" should be an integer.");
+                            }
+                            catch (NumberFormatException e) {
+                                System.out.println(InputOutput.COLOUR_RED +
+                                        "The argument following the flag \"-ccp\" should be an integer." +
+                                        InputOutput.COLOUR_RESET);
                                 System.out.println("Using default port.");
                             }
-                            i++; //Skips the argument which follows the flag.
+                            //Skips the argument which follows the flag.
+                            i++;
                         }
                         else {
-                            System.out.println("Expected argument after \"" + args[i] + "\".");
+                            System.out.println(InputOutput.COLOUR_RED +
+                                    "Expected argument after \"" + args[i] + "\"." +
+                                    InputOutput.COLOUR_RESET);
+                            System.out.println("Using default port.");
                         }
                         break;
                     case "-cca":
-                        if (args.length >= i+1) {
+                        //Sets the hostname to equal the argument following "-cca", if it exists.
+                        if (args.length > i+1) {
                             hostname = args[i+1];
-                            i++; //Skips the argument which follows the flag.
+                            //Skips the argument which follows the flag.
+                            i++;
                         }
                         else {
-                            System.out.println("Expected argument after \"" + args[i] + "\".");
+                            System.out.println(InputOutput.COLOUR_RED +
+                                    "Expected argument after \"" + args[i] + "\"." +
+                                    InputOutput.COLOUR_RESET);
                         }
                         break;
                     case "-gui":
                         useGUI = true;
                         break;
                     default:
-                        System.out.println("Flag \"" + args[i] + "\"not recognised.");
-                        System.out.println("Using default port and hostname.");
+                        System.out.println(InputOutput.COLOUR_RED +
+                                "Flag \"" + args[i] + "\" not recognised." +
+                                InputOutput.COLOUR_RESET);
                 }
             }
         }
         if (useGUI) {
-            final int portFinal = port;
-            final String hostnameFinal = hostname;
-            SwingUtilities.invokeLater(() -> ChatClientGUI.launchGUI(portFinal, hostnameFinal));
+            /* Instantiates final port and hostname constants to pass to the gui launcher so that potential changes to
+             * the "port" and "hostname" variables won't be reflected in the GUI when it is eventually run on the Event
+             * Dispatch Thread.
+             */
+            final int PORT_FINAL = port;
+            final String HOSTNAME_FINAL = hostname;
+            SwingUtilities.invokeLater(() -> ChatClientGUI.launchGUI(PORT_FINAL, HOSTNAME_FINAL));
         }
         else {
             ClientIO inputOutput = new ClientIO(false);
+            //Sets the default nickname to be anonymous, if none is chosen.
             String name = "Anonymous";
             try {
                 String inputName = inputOutput.prompt("Please enter a nickname:");

@@ -9,6 +9,9 @@ public class ServerReadConsoleThread extends Thread {
         this.inputOutput = inputOutput;
     }
 
+    /**
+     * Waits for console commands. Exits the program if the input is "EXIT".
+     */
     @Override
     public void run() {
         while (true) {

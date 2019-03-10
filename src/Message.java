@@ -2,10 +2,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Defines a message object, encompassing the message's content, the date and time it was sent and the name of the user
+ * who sent it.
+ */
 public class Message {
     private final String content;
     private final Date date;
     private final String name;
+
+    /* Defines a constant date format which is used on all clients and servers so that any difference in locale settings
+     * will not affect the way in which messages are parsed.
+     */
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm:ss");
 
     /**
@@ -59,15 +67,22 @@ public class Message {
      * @throws ParseException If the date received cannot be parsed.
      */
     protected static Message parse(String input) throws ParseException {
+        //Parses the content section of the string between the first pair of curly braces
         int endOfSection = input.indexOf('}');
         String inputContent = input.substring((input.indexOf('{') + 1), input.indexOf('}'));
+
+        //Parses the date section of the string between the second pair of curly braces
         input = input.substring(endOfSection + 1);
         endOfSection = input.indexOf('}');
         String inputDateString = input.substring((input.indexOf('{') + 1), endOfSection);
+
+        //Parses the name section of the string between the third pair of curly braces
         input = input.substring(endOfSection + 1);
         endOfSection = input.indexOf('}');
         String inputName = input.substring((input.indexOf('{')+1), endOfSection);
+
         Date inputDate = dateFormat.parse(inputDateString);
+
         return new Message(inputContent, inputName, inputDate);
     }
 

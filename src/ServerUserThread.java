@@ -26,9 +26,11 @@ public class ServerUserThread extends Thread {
      * @param message The message to be sent.
      */
     protected void addMessage(Message message) {
+        //Output the message to the server's relevant output
         server.getIO().write(message);
-        for (ServerUserThread client:
-                server.getClients()) {
+
+        //Send the message to all clients (except the sender)
+        for (ServerUserThread client : server.getClients()) {
             if (client!=this) {
                 client.send(message);
             }
@@ -43,16 +45,11 @@ public class ServerUserThread extends Thread {
         try {
             BufferedReader inReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while(!socket.isClosed()) {
-                String message = inReader.readLine();/*
-                try {
-                    wait();
-                }
-                catch (InterruptedException e) {
-                    server.getIO().error("InterruptedException occurred when trying to wait.");
-                }*/
+                String message = inReader.readLine();
                 if (message!=null) {
                     if (!message.equals("")) {
                         try {
+                            //Send the message
                             addMessage(Message.parse(message));
                         }
                         catch (ParseException e) {
@@ -60,18 +57,15 @@ public class ServerUserThread extends Thread {
                         }
                     }
                 }
+                //If message is null, then the client has disconnected.
                 else {
-                    //If message is null, then the client has disconnected.
+                    //Close the socket and remove this client from the server's list of clients
                     socket.close();
                     server.removeClient(this);
-                    return; //Stop this thread from running
-                }/*
-                try {
-                    Thread.sleep(500);
+
+                    //Stop this thread from running
+                    return;
                 }
-                catch (InterruptedException e) {
-                    server.getIO().error("InterruptedException occurred when trying to sleep.");
-                }*/
             }
         }
         catch (IOException e) {
@@ -98,6 +92,11 @@ public class ServerUserThread extends Thread {
     }
 
 
+    /**
+     * Generates a string representation of this client in the form "Port: <code>portNumber</code> | ClientID:
+     * <code>id</code>.
+     * @return The string representation of the client.
+     */
     @Override
     public String toString() {
         return "Port: " + socket.getPort() + " | Client ID: " + clientID;

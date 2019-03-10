@@ -4,13 +4,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Defines some input/output methods which are universal to both the client and server programs.
+ */
 public abstract class InputOutput {
     private boolean useGUI;
-    private GUI gui;
+
+    //Provides the necessary escape codes for colouring output text red on Linux and Mac, but not on Windows
+    protected static final String COLOUR_RESET = "\u001B[0m";
+    protected static final String COLOUR_RED = "\u001B[31m";
 
     /**
      * Initialises the output to be either command line or GUI.
-     * @param useGUI True to use GUI and false to use command line.
+     * @param useGUI True to use GUI or false to use command line.
      */
     public InputOutput(boolean useGUI) {
         this.useGUI = useGUI;
@@ -24,19 +30,23 @@ public abstract class InputOutput {
         if (isUsingGUI()) {
             try {
                 /* This invokeAndWait is necessary so that the program will wait until the error message has been
-                 * displayed before exiting.
+                 * displayed and dismissed before exiting.
                  */
                 SwingUtilities.invokeAndWait(() -> GUI.writeError(errorDescription));
             }
             catch (InvocationTargetException e) {
-                System.out.println("InvocationTargetException occurred while trying to display an error message.");
+                System.out.println(COLOUR_RED +
+                        "InvocationTargetException occurred while trying to display an error message." +
+                        COLOUR_RESET);
             }
             catch (InterruptedException e) {
-                System.out.println("InterruptedException occurred while trying to display an error message.");
+                System.out.println(COLOUR_RED +
+                        "InterruptedException occurred while trying to display an error message." +
+                        COLOUR_RESET);
             }
         }
         else {
-            write("ERROR:" + errorDescription);
+            write(COLOUR_RED + "ERROR: " + errorDescription + COLOUR_RESET);
         }
     }
 
@@ -52,31 +62,17 @@ public abstract class InputOutput {
      * @param desiredOutput The message you would like to output to the user. This should describe what type of input
      *                      you expect.
      * @return The user's input.
-     * @throws ExitException If the user has typed <samp>EXIT</samp>.
+     * @throws ExitException If the user has typed <code>EXIT</code>.
      */
-    protected String prompt(String desiredOutput) throws ExitException{
-        if (useGUI) {
-            try {
-                SwingUtilities.invokeAndWait(() -> GUI.promptUserForInput(desiredOutput));
-
-            }
-            catch (InterruptedException e) {
-                error("InterruptedException occurred while trying to prompt the user.");
-            } catch (InvocationTargetException e) {
-                error("InvocationTargetException occurred while trying to prompt the user.");
-            }
-        }
-        else {
+    protected String prompt(String desiredOutput) throws ExitException {
             System.out.println(desiredOutput);
             return readConsole();
-        }
-        return GUI.promptUserForInput(desiredOutput);
     }
 
     /**
      * Read input from the command line.
      * @return The user's input.
-     * @throws ExitException If the user has typed <samp>EXIT</samp>.
+     * @throws ExitException If the user has typed <code>EXIT</code>.
      */
     protected String readConsole() throws ExitException {
         String input;
@@ -115,12 +111,5 @@ public abstract class InputOutput {
      * Writes to the relevant output.
      * @param message The message to be output.
      */
-    protected void write(Message message) {
-        if (useGUI) {
-            //TODO add default message output for GUI (primarily for the server as this method is overridden for the client)
-        }
-        else {
-            System.out.println(message);
-        }
-    }
+    protected abstract void write(Message message);
 }

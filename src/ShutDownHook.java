@@ -15,6 +15,9 @@ public class ShutDownHook extends Thread {
         this.inputOutput = inputOutput;
     }
 
+    /**
+     * Closes the socket.
+     */
     public void run() {
         try {
             socket.close();

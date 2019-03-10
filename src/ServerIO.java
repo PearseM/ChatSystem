@@ -10,19 +10,24 @@ public class ServerIO extends InputOutput {
     public ServerIO(boolean useGUI) {
         super(useGUI);
         if (useGUI) {
-            SwingUtilities.invokeLater(() -> {
-                gui = new ChatServerGUI();
-            });
+            //Invokes the creation of the GUI on the Event Dispatch Thread, when it is ready
+            SwingUtilities.invokeLater(() -> gui = new ChatServerGUI());
         }
     }
 
+    /**
+     * Adds the client to the list of clients under the 'Clients' tab in the GUI.
+     * @param client The client to add to the list.
+     */
     protected void addClientInfo(ServerUserThread client) {
-        gui.addClient(client);
+        //Instructs the Event Dispatch Thread to add the client to the GUI clients list, when it is ready
+        SwingUtilities.invokeLater(() -> gui.addClient(client));
     }
 
     @Override
     protected void write(Message message) {
         if (isUsingGUI()) {
+            //Instructs the Event Dispatch Thread to add the message to the GUI messages list, when it is ready
             SwingUtilities.invokeLater(() -> gui.addMessage(message));
         }
         else {
@@ -30,7 +35,12 @@ public class ServerIO extends InputOutput {
         }
     }
 
+    /**
+     * Removes the client from the list of clients under the 'Clients' tab in the GUI.
+     * @param client The client to remove from the list.
+     */
     protected void removeClient(ServerUserThread client) {
-        gui.removeClient(client);
+        //Instructs the Event Dispatch Thread to remove the client from the GUI clients list, when it is ready
+        SwingUtilities.invokeLater(() -> gui.removeClient(client));
     }
 }

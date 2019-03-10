@@ -31,9 +31,13 @@ public class ClientServerThread extends Thread {
         else {
             try {
                 PrintWriter socketWriter = new PrintWriter(socket.getOutputStream(), true);
+                //Sends the message to the server
                 socketWriter.println(message.toTransportString());
+
+                //Displays the message on this client
                 client.getIO().write(message, true);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 client.getIO().error("IOException occurred when trying to send message.");
             }
         }
@@ -48,6 +52,7 @@ public class ClientServerThread extends Thread {
             String input;
             try {
                 BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                //This line blocks until a message has been received from the server
                 input = socketReader.readLine();
                 if (input!=null) {
                     if (!input.equals("")) {
@@ -59,6 +64,7 @@ public class ClientServerThread extends Thread {
                         }
                     }
                 }
+                //If the message is null, then the connection to the server has been lost
                 else {
                     client.getIO().error("Exiting because connection to server has been lost.");
                     System.exit(0);
