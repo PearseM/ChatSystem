@@ -29,15 +29,6 @@ public abstract class GUI {
     }
 
     /**
-     * Creates a dialog which waits for a user to input text.
-     * @param message Instructions telling the user what they should input.
-     * @return The user's input.
-     */
-    protected static synchronized String promptUserForInput(String message) {
-        return JOptionPane.showInputDialog(message);
-    }
-
-    /**
      * Creates a title JLabel.
      * @param titleString The desired text for the title.
      * @return The title as a JLabel.
