@@ -1,0 +1,95 @@
+###################
+# Chatting System #
+###################
+
+Table of contents:
+    1. Installation
+    2. Running
+    3. Using the client
+        3.1 Using the client from the command line
+        3.2 Using the client GUI
+    4. Using the server
+        4.1 Using the server from the command line
+        4.2 Using the server GUI
+
+--- 1. Installation ---
+
+    Open a command line of your choice e.g. Command Prompt on Windows or Terminal on MacOS and Linux.
+    To compile the program for the first time, first navigate to the folder containing the source files (files ending in
+    .java). Next, depending on whether you would like to use the client or server program, type either/both:
+    - $ javac ChatClient.java
+    - $ javac ChatServer.java
+
+
+--- 2. Running ---
+
+    Once installed, navigate to where the compiled files are located (by default this will be in the same location as
+    where you compiled them). Depending on whether you would like to use the client or server program, type either:
+    - $ java ChatClient
+    - $ java ChatServer
+
+    You may also append the "-gui" flag to the end of either of the above commands in order to run the program with its
+    graphical user interface. Furthermore, the following flags may also be used:
+    ChatClient:
+        - "-ccp" followed by an integer in the range 0 to 65535 to specify the port on the server you would like to
+            connect to. By default the client will connect on port 14001.
+        - "-cca" followed by a valid IP address or URL to specify the IP address of the server you would like to connect
+            to. By default the client will connect to "localhost".
+
+    ChatServer:
+        - "-csp" followed by an integer in the range 0 to 65535 to specify the port that the server should bind to. By
+            default, the server will bind to port 14001.
+
+    If any of the above flags are combined with the "-gui" flag, you will have the option to override these parameters
+    when the GUI launch menu appears.
+
+
+--- 3. Using the client ---
+
+    --- 3.1 Using the client from the command line ---
+
+    Upon running the program from the command line, you will be prompted to choose a nickname. This name will be
+    displayed next to any messages you send. Once you have chosen your name, the client will attempt to connect to the
+    server and will inform you if the connection was successful.
+    Following this, you may type a message in the command line. Messages cannot contain curly braces ('{' or '}').
+    Once you are ready, press the 'enter' key on the keyboard to send it.
+
+    At any time, you may type "EXIT" and press enter to disconnect from the server and close the program.
+
+
+    --- 3.2 Using the client GUI ---
+
+    Upon running the GUI from the command line, you will be prompted with a menu screen. On this screen you can choose
+    the port and hostname/IP address to bind to, as well as the nickname you would like to appear next to all outgoing
+    messages. Once you click 'connect', the client will attempt to connect to the server and will inform you as to whether
+    the connection was successful.
+    Once you are connected, you may type a message in the text field at the bottom of the window. Press the 'enter' key
+    on your keyboard or click the 'send' button to send the message. At any time, you may click the exit button at the
+    top corner of the window to disconnect from the server and exit the application.
+
+
+--- 4. Using the server ---
+
+    --- 4.1 Using the server from the command line ---
+
+    Upon running the program from the command line, the server will immediately attempt to bind on the port you have
+    specified using the "-csp" flag (or 14001 if no port has been specified). The console output will inform you as to
+    whether this was successful or not.
+    Once the server is running, clients may connect using the correct port and IP address. Once a client has connected,
+    the console will inform you of the port the client connected on, and the local port that they were assigned to. Any
+    messages that are sent by clients will appear in the server console.
+
+    At any time, you may type "EXIT" and press enter to shut the server down, disconnecting all clients.
+
+
+    --- 4.2 Using the server GUI ---
+
+    Upon running the GUI from the command line, you will be prompted with a menu screen. On this screen you can choose
+    the port that the server should bind to. Once you click 'launch', the server will attempt to bind to the port you
+    have specified and inform you as to whether or not the process was successful.
+    When the server is running, you can see the port that the server is open on, as well as the external IP address of
+    the system that the server is running on. The latter feature does not work on linux.bath in my testing, due to the
+    nature of how the program determines the IP address, however, I have tested it on MacOS.
+    By default, the 'messages' pane is in view. This allows you to see all of the messages that the server has handled.
+    You can switch to the 'clients' pane (and back) using the tabs at the top. The clients pane displays a list of all
+    of the clients that are currently connected.
