@@ -93,7 +93,7 @@ public class ChatClientGUI {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.insets = new Insets(10, 0, 10, 0);
-        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.fill = GridBagConstraints.NONE;
         if (side==0) {
             constraints.gridx = 0;
         }
