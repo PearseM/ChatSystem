@@ -32,6 +32,10 @@ public class LaunchAction extends AbstractAction {
         isClient = true;
     }
 
+    /**
+     * Validates the input and starts the main application.
+     * @param e The event which triggered this action.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         //Reads and validates the port, which is common to both client and server

@@ -47,14 +47,18 @@ public abstract class GUI {
      * @param title The title to display near the top of the window.
      * @param inputsPanel The grid of input labels and fields which will be displayed in the middle of the window.
      * @param connectButton The button which will be displayed under the inputsPanel.
+     * @param buttonBottomSpacing The amount by which the button should be spaced from the bottom of the window.
      */
-    protected static void outputFrame(JFrame frame, JLabel title, JPanel inputsPanel, JButton connectButton) {
+    protected static void outputFrame(JFrame frame, JLabel title, JPanel inputsPanel, JButton connectButton,
+                                      int buttonBottomSpacing) {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
         container.add(title);
         container.add(new JSeparator(SwingConstants.HORIZONTAL));
         container.add(inputsPanel);
+        container.add(Box.createRigidArea(new Dimension(0, 25)));
         container.add(connectButton);
+        container.add(Box.createRigidArea(new Dimension(0, buttonBottomSpacing)));
 
         frame.setContentPane(container);
         frame.setSize(new Dimension(800, 600));

@@ -156,10 +156,10 @@ public class ChatClientGUI {
 
         JButton connectButton = new JButton("Connect");
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 200, 0));
+        //connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 200, 0));
         connectButton.addActionListener(new LaunchAction(portField, hostnameField, nicknameField));
 
-        GUI.outputFrame(frame, title, inputsPanel, connectButton);
+        GUI.outputFrame(frame, title, inputsPanel, connectButton, 200);
     }
 
     /**

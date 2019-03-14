@@ -48,9 +48,7 @@ public class MessagePanel extends JPanel {
 
         //Calculates the necessary size of the message box
         int desiredWidth = messageContent.getPreferredSize().width + 20;
-        System.out.println(desiredWidth);
         int desiredHeight = messageContent.getPreferredSize().height + 20;
-        System.out.println(desiredHeight);
         int calculateHeight = (desiredWidth < 290) ? desiredHeight : (((desiredWidth/290)+1) * 18) + 230;
         int outputHeight = (calculateHeight < 140) ? 140 : calculateHeight;
 

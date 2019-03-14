@@ -67,23 +67,31 @@ public class Message {
      * @throws ParseException If the date received cannot be parsed.
      */
     protected static Message parse(String input) throws ParseException {
-        //Parses the content section of the string between the first pair of curly braces
-        int endOfSection = input.indexOf('}');
-        String inputContent = input.substring((input.indexOf('{') + 1), input.indexOf('}'));
+        if (input.contains("{") && input.contains("}")) {
+            //Parses the content section of the string between the first pair of curly braces
+            int endOfSection = input.indexOf('}');
+            String inputContent = input.substring((input.indexOf('{') + 1), input.indexOf('}'));
 
-        //Parses the date section of the string between the second pair of curly braces
-        input = input.substring(endOfSection + 1);
-        endOfSection = input.indexOf('}');
-        String inputDateString = input.substring((input.indexOf('{') + 1), endOfSection);
+            //Parses the date section of the string between the second pair of curly braces
+            input = input.substring(endOfSection + 1);
+            endOfSection = input.indexOf('}');
+            String inputDateString = input.substring((input.indexOf('{') + 1), endOfSection);
 
-        //Parses the name section of the string between the third pair of curly braces
-        input = input.substring(endOfSection + 1);
-        endOfSection = input.indexOf('}');
-        String inputName = input.substring((input.indexOf('{')+1), endOfSection);
+            //Parses the name section of the string between the third pair of curly braces
+            input = input.substring(endOfSection + 1);
+            endOfSection = input.indexOf('}');
+            String inputName = input.substring((input.indexOf('{') + 1), endOfSection);
 
-        Date inputDate = dateFormat.parse(inputDateString);
+            Date inputDate = dateFormat.parse(inputDateString);
 
-        return new Message(inputContent, inputName, inputDate);
+            return new Message(inputContent, inputName, inputDate);
+        }
+        else {
+            /* If the incoming message does not conform to the correct then just create a message object with content
+             * from the input string and name "Anonymous".
+             */
+            return new Message(input, "Anonymous");
+        }
     }
 
     /**

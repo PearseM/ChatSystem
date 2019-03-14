@@ -121,21 +121,33 @@ public class ChatServerGUI {
 
         JButton connectButton = new JButton("Launch");
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 330, 0));
+        //connectButton.setBorder(BorderFactory.createEmptyBorder(25, 0, 330, 0));
         connectButton.addActionListener(new LaunchAction(portField));
 
-        GUI.outputFrame(frame, title, inputsPanel, connectButton);
+        GUI.outputFrame(frame, title, inputsPanel, connectButton, 330);
 
     }
 
+    /**
+     * Outputs a message to the server's GUI
+     * @param message The message to be output
+     */
     protected synchronized void addMessage(Message message) {
         messageListModel.addElement(message);
     }
 
+    /**
+     * Adds a client to the server's list of currently connected clients
+     * @param client The client to be added
+     */
     protected synchronized void addClient(ServerUserThread client) {
         clientListModel.addElement(client);
     }
 
+    /**
+     * Removes a client from the list of currently connected clients
+     * @param client The client to be removed
+     */
     protected synchronized void removeClient(ServerUserThread client) {
         clientListModel.removeElement(client);
     }
