@@ -13,27 +13,8 @@ public class MessagePanel extends JPanel {
      * @param message The message object to be displayed in the 'bubble'.
      */
     public MessagePanel(Message message) {
-        //super();
         setLayout(new BorderLayout());
-        String cssProperties = "color: white; font-family: Arial; word-break: break-all;";
 
-        //Defines the HTML markup of the message
-        String messageText =
-                "<html>" +
-                    "<h4 style=\"" + cssProperties + "\">" + message.getName() + "</h4>" +
-                    "<p style=\"" + cssProperties + "\">" + message.getContent() + "</p>" +
-                    "<h5 style=\"" + cssProperties + "\"><em>" + message.getDateString() + "</em></h5>" +
-                "</html>";
-
-        /*JEditorPane messageContent = new JEditorPane("text/html", messageText);
-        messageContent.setOpaque(false);
-        messageContent.setEditable(false);
-        messageContent.setPreferredSize(new Dimension(180, messageContent.getPreferredSize().height));
-        messageContent.setMaximumSize(new Dimension(180, messageContent.getPreferredSize().height));
-        messageContent.setAlignmentX(Component.LEFT_ALIGNMENT);
-        messageContent.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
-        add(messageContent, BorderLayout.CENTER);
-        */
         JTextPane messageContent = new JTextPane();
         messageContent.setOpaque(false);
         messageContent.setEditable(false);
@@ -62,19 +43,24 @@ public class MessagePanel extends JPanel {
         catch (BadLocationException e) {
             e.printStackTrace();
         }
-        //messageContent.setPreferredSize(new Dimension(300, messageContent.getPreferredSize().height));
-        //messageContent.setMaximumSize(messageContent.getPreferredSize());
         messageContent.setAlignmentX(Component.LEFT_ALIGNMENT);
         messageContent.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 
+        //Calculates the necessary size of the message box
+        int desiredWidth = messageContent.getPreferredSize().width + 20;
+        System.out.println(desiredWidth);
+        int desiredHeight = messageContent.getPreferredSize().height + 20;
+        System.out.println(desiredHeight);
+        int calculateHeight = (desiredWidth < 290) ? desiredHeight : (((desiredWidth/290)+1) * 18) + 230;
+        int outputHeight = (calculateHeight < 140) ? 140 : calculateHeight;
+
+        //Sets the preferred width to be the desired width if it less than 290, or 290 otherwise.
+        setPreferredSize(new Dimension(((desiredWidth < 290) ? desiredWidth : 290),
+                outputHeight));
+        setMaximumSize(new Dimension(290, Integer.MAX_VALUE));
+
         add(messageContent, BorderLayout.CENTER);
-
-        setPreferredSize(new Dimension((messageContent.getPreferredSize().width + 20),
-                (messageContent.getPreferredSize().height + 20)));
-        setMaximumSize(getPreferredSize());
-        setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
     }
-
 
     @Override
     public Dimension getMinimumSize() {
