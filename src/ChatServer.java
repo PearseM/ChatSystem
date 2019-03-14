@@ -23,7 +23,9 @@ public class ChatServer extends Thread {
             Runtime.getRuntime().addShutdownHook(new ShutDownHook(serverSocket, inputOutput));
         }
         catch (IOException e) {
-            inputOutput.error("IOException occurred when trying to listen on port " + port + ".");
+            inputOutput.error("IOException occurred when trying to listen on port " + port + ". Port is most likely" +
+                    "unavailable.");
+            System.exit(0);
         }
     }
 

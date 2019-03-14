@@ -30,9 +30,15 @@ public abstract class InputOutput {
         if (isUsingGUI()) {
             try {
                 /* This invokeAndWait is necessary so that the program will wait until the error message has been
-                 * displayed and dismissed before exiting.
+                 * displayed and dismissed before exiting. The if statement checks to make sure this isn't the Event
+                 * Dispatch Thread as running an invokeAndWait on the EDT would block and cause an error.
                  */
-                SwingUtilities.invokeAndWait(() -> GUI.writeError(errorDescription));
+                if (SwingUtilities.isEventDispatchThread()) {
+                    GUI.writeError(errorDescription);
+                }
+                else {
+                    SwingUtilities.invokeAndWait(() -> GUI.writeError(errorDescription));
+                }
             }
             catch (InvocationTargetException e) {
                 System.out.println(COLOUR_RED +
