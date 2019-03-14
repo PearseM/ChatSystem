@@ -24,7 +24,7 @@ public class ChatServer extends Thread {
         }
         catch (IOException e) {
             inputOutput.error("IOException occurred when trying to listen on port " + port + ". Port is most likely" +
-                    "unavailable.");
+                    " unavailable.");
             System.exit(0);
         }
     }
